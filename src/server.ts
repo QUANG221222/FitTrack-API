@@ -1,5 +1,6 @@
 import express from 'express'
 import { env } from '~/config/environment'
+import { CONNECT_DB } from '~/config/mongodb'
 
 const app = express()
 
@@ -20,6 +21,16 @@ const START_SERVER = () => {
 }
 
 // Immediately Invoked Function Expression (IIFE) to start the server
-;(() => {
-  START_SERVER()
+;(async () => {
+  try {
+    console.log('1. Connecting to MongoDB...')
+    await CONNECT_DB()
+    console.log('2. Connected to MongoDB successfully!')
+
+    // Start the server
+    START_SERVER()
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error)
+    process.exit(0) // Exit the process with failure
+  }
 })()
