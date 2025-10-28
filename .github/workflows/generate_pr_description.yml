@@ -23,10 +23,14 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: "3.x"
+          python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install google-generativeai
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          python -m pip install --upgrade pip
+          pip install google-generativeai packaging
 
       - name: Get Pull Request Information
         id: pr_info
