@@ -1,0 +1,195 @@
+name: Generate Pull Request Description
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+  issues: write
+  repository-projects: read
+
+jobs:
+  generate_description:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Needed to get all commit history
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install google-generativeai
+
+      - name: Get Pull Request Information
+        id: pr_info
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
+          HEAD_BRANCH="${{ github.event.pull_request.head.ref }}"
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "BASE_BRANCH=$BASE_BRANCH" >> $GITHUB_OUTPUT
+          echo "HEAD_BRANCH=$HEAD_BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Get Commit Messages
+        id: commit_messages
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.ref }}
+
+          # Get commit messages and write to file to avoid environment variable limits
+          git log --pretty=format:"%s" origin/${{ github.event.pull_request.base.ref }}...origin/${{ github.event.pull_request.head.ref }} > commit_messages.txt || echo "No commits found" > commit_messages.txt
+
+          # Also set as output for backward compatibility, but limit size
+          COMMIT_MESSAGES=$(head -c 10000 commit_messages.txt)
+          echo "COMMIT_MESSAGES<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMIT_MESSAGES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Get Code Changes (Diff)
+        id: diff
+        run: |
+          # Get diff and limit its size to prevent "Argument list too long" errors
+          git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ github.event.pull_request.head.ref }} > full_diff.txt
+
+          # Check diff size and truncate if necessary (limit to ~50KB to be safe)
+          if [ $(wc -c < full_diff.txt) -gt 51200 ]; then
+            echo "Diff is too large, truncating to first 50KB..."
+            head -c 50000 full_diff.txt > diff.txt
+            echo -e "\n\n[... Diff truncated due to size limitations ...]" >> diff.txt
+          else
+            cp full_diff.txt diff.txt
+          fi
+
+          echo "DIFF_FILE=diff.txt" >> $GITHUB_OUTPUT
+
+      - name: Create Python Script
+        run: |
+          cat > generate_description.py << 'EOL'
+          import os
+          import google.generativeai as genai
+          import sys
+          import re
+
+          # Configure Gemini AI with the updated model
+          GOOGLE_API_KEY = os.environ.get("GEMINI_API_KEY")
+          genai.configure(api_key=GOOGLE_API_KEY)
+
+          # Use Gemini 2.0 Flash model
+          model = genai.GenerativeModel('gemini-2.0-flash')
+
+          # Get the input data from files (more reliable than environment variables)
+          # Try to read commit messages from file first, fallback to environment variable
+          try:
+              with open('commit_messages.txt', 'r', encoding='utf-8', errors='ignore') as f:
+                  commit_messages = f.read().strip()
+          except FileNotFoundError:
+              commit_messages = os.environ.get("COMMIT_MESSAGES", "")
+          except Exception as e:
+              commit_messages = f"Error reading commit messages: {str(e)}"
+
+          # Read diff from file instead of environment variable
+          try:
+              with open('diff.txt', 'r', encoding='utf-8', errors='ignore') as f:
+                  diff = f.read()
+          except FileNotFoundError:
+              diff = "Unable to read diff file"
+          except Exception as e:
+              diff = f"Error reading diff: {str(e)}"
+
+          # Check if we have valid input data
+          if not commit_messages or commit_messages.strip() == "":
+              commit_messages = "No commit messages available"
+
+          if not diff or diff.strip() == "":
+              diff = "No code changes available"
+
+          # Limit diff size if it's extremely large (additional safety check)
+          if len(diff) > 100000:  # 100KB limit
+              diff = diff[:100000] + "\n\n[... Content truncated due to size limitations ...]"
+
+          # Construct the prompt
+          prompt = f"""
+          Please generate a professional and concise pull request description based on the following information.
+          Write the description IN English:
+
+          Commit Messages:
+          {commit_messages}
+
+          Code Changes (Diff):
+          {diff}
+
+          Focus on summarizing the key changes, their purpose, and any important context.
+          Do not include any sensitive information or details that are not relevant to the pull request.
+          Do not wrap the entire description in triple backticks (```).
+          Do not start or end your response with triple backticks.
+          Ensure your entire response is in English with proper English diacritical marks.
+          Use a professional tone suitable for a development team.
+          Include a pull request title, a brief description and a detailed description of the changes.
+          """
+
+          # Generate the description
+          try:
+              response = model.generate_content(prompt)
+              generated_description = response.text
+              
+              # Remove leading and trailing triple backticks if present
+              generated_description = re.sub(r'^```.*?\n', '', generated_description, flags=re.DOTALL)
+              generated_description = re.sub(r'\n```\s*$', '', generated_description)
+              
+              # Ensure we have valid content
+              if not generated_description or generated_description.strip() == "":
+                  generated_description = "Pull request description could not be generated automatically."
+              
+              # Save the clean description to a file for later use
+              with open('pr_description.txt', 'w', encoding='utf-8') as f:
+                  f.write(generated_description)
+              
+              print("Successfully generated PR description in English using Gemini 2.0 Flash")
+          except Exception as e:
+              print(f"Error generating description: {e}", file=sys.stderr)
+              # Create a fallback description
+              fallback_description = f"""
+              Pull Request
+
+              This pull request contains the following commits:
+              {commit_messages if commit_messages != "No commit messages available" else "No commit information available"}
+
+              Note: Automatic description generation failed. Please review the changes manually.
+              """
+              
+              with open('pr_description.txt', 'w', encoding='utf-8') as f:
+                  f.write(fallback_description.strip())
+              
+              print("Created fallback PR description due to generation error")
+              # Don't exit with error code to allow the workflow to continue
+          EOL
+
+      - name: Generate Description with Gemini AI
+        id: gemini_description
+        run: python generate_description.py
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          COMMIT_MESSAGES: ${{ steps.commit_messages.outputs.COMMIT_MESSAGES }}
+
+      - name: Update Pull Request Description
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+
+          # Use the GitHub REST API directly via curl instead of the GitHub CLI
+          curl -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER" \
+            -d @- << EOF
+          {
+            "body": $(cat pr_description.txt | jq -R -s '.')
+          }
+          EOF
