@@ -5,8 +5,10 @@ import ApiError from '~/utils/ApiError'
 import { v7 as uuidv7 } from 'uuid'
 import bcrypt from 'bcryptjs'
 import { BrevoProvider } from '~/providers/BrevoProvider'
+import { JwtProvider } from '~/providers/JwtProvider'
 import { WEBSITE_DOMAIN } from '~/utils/constants'
 import { pickUser } from '~/utils/fomatter'
+import { env } from '~/configs/environment'
 
 const createNew = async (req: Request): Promise<any> => {
   try {
@@ -103,7 +105,89 @@ const verifyEmail = async (req: Request): Promise<any> => {
   }
 }
 
+const login = async (req: Request): Promise<any> => {
+  try {
+    // Query user trong database
+    const exitstUser = await userModel.findOneByEmail(req.body.email)
+
+    // Check existence of user
+    if (!exitstUser)
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found!')
+    if (!exitstUser.isActive)
+      throw new ApiError(
+        StatusCodes.NOT_ACCEPTABLE,
+        'Your account is not active! Please check your email!'
+      )
+    if (!bcrypt.compareSync(req.body.password, exitstUser.password)) {
+      throw new ApiError(
+        StatusCodes.NOT_ACCEPTABLE,
+        'Your Email of Password is incorrect!'
+      )
+    }
+
+    // Create User Info to generate token
+    const userInfo = {
+      _id: exitstUser._id,
+      email: exitstUser.email,
+      role: exitstUser.role
+    }
+
+    // Create 2 tokens: accessToken & refreshToken
+    const accessToken = await JwtProvider.generateToken(
+      userInfo,
+      env.ACCESS_TOKEN_SECRET_SIGNATURE as string,
+      // 5 // 5 seconds for testing
+      env.ACCESS_TOKEN_LIFE as string
+    )
+
+    const refreshToken = await JwtProvider.generateToken(
+      userInfo,
+      env.REFRESH_TOKEN_SECRET_SIGNATURE as string,
+      // 15 // 15 seconds for testing
+      env.REFRESH_TOKEN_LIFE as string
+    )
+
+    // Return user information along with the 2 tokens created
+    return { accessToken, refreshToken, ...pickUser(exitstUser) }
+  } catch (error) {
+    throw error
+  }
+}
+
+const refreshToken = async (clientRefreshToken: string) => {
+  try {
+    // Verify token received from client
+    const refreshTokenDecoded = JwtProvider.verifyToken(
+      clientRefreshToken,
+      env.REFRESH_TOKEN_SECRET_SIGNATURE as string
+    )
+
+    // console.log('refreshTokenDecoded', refreshTokenDecoded)
+
+    // We only store unique, immutable user info in the refresh token (e.g. _id, email),
+    // so we can reuse the decoded payload directly instead of querying the database.
+    const userInfo = {
+      _id: (refreshTokenDecoded as any)._id as string,
+      email: (refreshTokenDecoded as any).email as string,
+      role: (refreshTokenDecoded as any).role as string
+    }
+
+    // Create new accessToken
+    const accessToken = await JwtProvider.generateToken(
+      userInfo,
+      env.ACCESS_TOKEN_SECRET_SIGNATURE as string,
+      // 5 // 5 seconds for testing access token refresh
+      env.ACCESS_TOKEN_LIFE as string
+    )
+    return { accessToken }
+  } catch (error) {
+    throw error
+  }
+}
+
 export const userService = {
   createNew,
-  verifyEmail
+  verifyEmail,
+  login,
+  refreshToken
 }

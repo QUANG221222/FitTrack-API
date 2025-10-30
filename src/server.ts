@@ -1,6 +1,7 @@
 import express from 'express'
 import { env } from '~/configs/environment'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import { corsOptions } from '~/configs/cors'
 import { CONNECT_DB } from '~/configs/mongodb'
 import { APIs_V1 } from '~/routes/v1/index.routes'
@@ -8,6 +9,9 @@ import { errorHandlingMiddleware } from '~/middlewares/errorHandling.middleware'
 
 const START_SERVER = () => {
   const app = express()
+
+  // Config Cookie Parser
+  app.use(cookieParser())
 
   // Config CORS
   app.use(cors(corsOptions))
