@@ -22,6 +22,8 @@ const USER_COLLECTION_SCHEMA: Joi.ObjectSchema<IUser> = Joi.object({
   updatedAt: Joi.date().timestamp('javascript').default(null)
 })
 
+const INVALID_UPDATE_FIELDS = ['_id', 'email', 'role', 'createdAt']
+
 const createNew = async (userData: Partial<IUser>): Promise<any> => {
   try {
     const validatedData = await USER_COLLECTION_SCHEMA.validateAsync(userData, {
@@ -61,8 +63,34 @@ const findOneById = async (id: string): Promise<IUser | null> => {
   }
 }
 
+const update = async (id: string, data: Partial<IUser>): Promise<any> => {
+  try {
+    // Remove invalid fields from the update data
+    Object.keys(data).forEach((key) => {
+      if (INVALID_UPDATE_FIELDS.includes(key)) {
+        delete (data as any)[key]
+      }
+    })
+
+    const result = await GET_DB()
+      .collection(COLLECTION_NAME)
+      .findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: data },
+        {
+          returnDocument: 'after'
+        }
+      )
+
+    return result as IUser | null
+  } catch (error: any) {
+    throw new Error(error)
+  }
+}
+
 export const userModel = {
   findOneByEmail,
   createNew,
-  findOneById
+  findOneById,
+  update
 }
