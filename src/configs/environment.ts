@@ -1,0 +1,15 @@
+import 'dotenv/config'
+
+export const env = {
+  LOCAL_APP_PORT: process.env.LOCAL_APP_PORT || 8080,
+  LOCAL_APP_HOST: process.env.LOCAL_APP_HOST || 'localhost',
+  BUILD_MODE: process.env.BUILD_MODE,
+  AUTHOR_NAME: process.env.AUTHOR_NAME,
+  MONGODB_URI: process.env.MONGODB_URI,
+  DATABASE_NAME: process.env.DATABASE_NAME,
+  WEBSITE_DOMAIN_PRODUCTION: process.env.WEBSITE_DOMAIN_PRODUCTION,
+  WEBSITE_DOMAIN_DEVELOPMENT: process.env.WEBSITE_DOMAIN_DEVELOPMENT,
+  BREVO_API_KEY: process.env.BREVO_API_KEY,
+  ADMIN_EMAIL_ADDRESS: process.env.ADMIN_EMAIL_ADDRESS,
+  ADMIN_EMAIL_NAME: process.env.ADMIN_EMAIL_NAME
+}

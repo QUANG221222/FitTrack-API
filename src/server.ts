@@ -1,10 +1,26 @@
 import express from 'express'
-import { env } from '~/config/environment'
-import { CONNECT_DB } from '~/config/mongodb'
-
-const app = express()
+import { env } from '~/configs/environment'
+import cors from 'cors'
+import { corsOptions } from '~/configs/cors'
+import { CONNECT_DB } from '~/configs/mongodb'
+import { APIs_V1 } from '~/routes/v1/index.routes'
+import { errorHandlingMiddleware } from '~/middlewares/errorHandling.middleware'
 
 const START_SERVER = () => {
+  const app = express()
+
+  // Config CORS
+  app.use(cors(corsOptions))
+
+  // Middleware to parse JSON requests
+  app.use(express.json())
+
+  // Route for API v1
+  app.use('/v1', APIs_V1)
+
+  // Global Error Handling Middleware
+  app.use(errorHandlingMiddleware)
+
   if (env.BUILD_MODE === 'dev') {
     app.listen(Number(env.LOCAL_APP_PORT), String(env.LOCAL_APP_HOST), () => {
       console.log(
