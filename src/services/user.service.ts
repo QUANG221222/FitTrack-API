@@ -9,6 +9,7 @@ import { JwtProvider } from '~/providers/JwtProvider'
 import { WEBSITE_DOMAIN } from '~/utils/constants'
 import { pickUser } from '~/utils/fomatter'
 import { env } from '~/configs/environment'
+import { CloudinaryProvider } from '~/providers/CloudinaryProvider'
 
 const createNew = async (req: Request): Promise<any> => {
   try {
@@ -154,8 +155,40 @@ const login = async (req: Request): Promise<any> => {
   }
 }
 
+const update = async (req: Request): Promise<any> => {
+  try {
+    // Get user ID from JWT token
+    const userId = req.jwtDecoded._id
+
+    // Find user
+    const user = await userModel.findOneById(userId)
+    if (!user) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+    }
+
+    // Handle avatar upload if file is provided
+    if (req.file) {
+      // Delete old avatar from Cloudinary if exists
+      if (user.avatarPublicId) {
+        await CloudinaryProvider.deleteImage(user.avatarPublicId)
+      }
+    }
+
+    // Prepare update data
+    const updateData = { updatedAt: Date.now(), ...req.body }
+
+    // Update user in database
+    const updatedUser = await userModel.update(userId, updateData)
+
+    return pickUser(updatedUser)
+  } catch (error) {
+    throw error
+  }
+}
+
 export const userService = {
   createNew,
   verifyEmail,
-  login
+  login,
+  update
 }

@@ -9,6 +9,7 @@ export interface IAdmin {
   isActive: boolean
   verifyToken?: string | null
   avatar?: string | null
+  avatarPublicId?: string | null
   createdAt?: Date
   updatedAt?: Date
 }

@@ -29,6 +29,7 @@ const ADMIN_COLLECTION_SCHEMA = Joi.object<IAdmin>({
   isActive: Joi.boolean().default(false),
   verifyToken: Joi.string().allow('').optional(),
   avatar: Joi.string().uri().allow(null).optional(),
+  avatarPublicId: Joi.string().allow(null).optional(),
   createdAt: Joi.date().default(Date.now),
   updatedAt: Joi.date().default(Date.now)
 })

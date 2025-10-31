@@ -6,7 +6,8 @@ import {
   VerifyEmailRequest,
   VerifyEmailResponse,
   LoginRequest,
-  LoginResponse
+  LoginResponse,
+  UpdateUserResponse
 } from '~/types/user.type'
 import { userService } from '~/services/user.service'
 import ms from 'ms'
@@ -36,6 +37,7 @@ const verifyEmail = async (
 ): Promise<void> => {
   try {
     const result = await userService.verifyEmail(req)
+
     res.status(StatusCodes.OK).json({
       message: 'Email verified successfully',
       data: result
@@ -80,8 +82,31 @@ const login = async (
   }
 }
 
+const update = async (
+  req: Request,
+  res: Response<UpdateUserResponse>,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    if (req.file) {
+      req.body.avatar = req.file.path
+      req.body.avatarPublicId = req.file.filename
+    }
+
+    const result = await userService.update(req)
+
+    res.status(StatusCodes.OK).json({
+      message: 'User updated successfully',
+      data: result
+    })
+  } catch (error: any) {
+    next(error)
+  }
+}
+
 export const userController = {
   createNew,
   verifyEmail,
-  login
+  login,
+  update
 }
