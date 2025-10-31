@@ -16,8 +16,9 @@ const USER_COLLECTION_SCHEMA: Joi.ObjectSchema<IUser> = Joi.object({
   heightCm: Joi.number().optional().allow(null),
   weightKg: Joi.number().optional().allow(null),
   dob: Joi.date().optional().allow(null),
-  gender: Joi.string().optional().allow(null),
+  gender: Joi.string().valid('male', 'female', 'other').optional().allow(null),
   avatar: Joi.string().optional().allow(null),
+  avatarPublicId: Joi.string().optional().allow(null),
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
   updatedAt: Joi.date().timestamp('javascript').default(null)
 })

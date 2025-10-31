@@ -13,6 +13,7 @@ export interface IUser {
   heightCm?: number
   weightKg?: number
   avatar?: string
+  avatarPublicId?: string
   createdAt: Date
   updatedAt: Date | null
 }
@@ -55,7 +56,15 @@ export interface RefreshTokenRequest {
   refreshToken: string
 }
 
-export interface RefreshTokenResponse {
+export interface UpdateUserRequest {
+  displayName?: string
+  gender?: string
+  dob?: Date
+  heightCm?: number
+  weightKg?: number
+}
+
+export interface UpdateUserResponse {
   message: string
-  accessToken: string
+  data: Partial<IUser>
 }

@@ -8,6 +8,12 @@ export const pickUser = (user: any): any => {
     'displayName',
     'role',
     'isActive',
+    'heightCm',
+    'weightKg',
+    'dob',
+    'gender',
+    'avatar',
+    'avatarPublicId',
     'createdAt',
     'updatedAt'
   ])
@@ -19,6 +25,8 @@ export const pickAdmin = (user: any): any => {
     'username',
     'displayName',
     'role',
+    'avatar',
+    'avatarPublicId',
     'isActive',
     'createdAt',
     'updatedAt'
