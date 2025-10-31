@@ -44,7 +44,11 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   message: string
-  data: Partial<IUser>
+  data: {
+    user: Partial<IUser>
+    accessToken: string
+    refreshToken: string
+  }
 }
 
 export interface RefreshTokenRequest {
