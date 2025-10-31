@@ -18,6 +18,7 @@ export const pickUser = (user: any): any => {
     'updatedAt'
   ])
 }
+
 export const pickAdmin = (user: any): any => {
   return pick(user, [
     '_id',
@@ -28,6 +29,18 @@ export const pickAdmin = (user: any): any => {
     'avatar',
     'avatarPublicId',
     'isActive',
+    'createdAt',
+    'updatedAt'
+  ])
+}
+
+export const pickMuscleGroup = (muscleGroup: any): any => {
+  return pick(muscleGroup, [
+    '_id',
+    'name',
+    'description',
+    'imageUrl',
+    'imagePublicId',
     'createdAt',
     'updatedAt'
   ])
