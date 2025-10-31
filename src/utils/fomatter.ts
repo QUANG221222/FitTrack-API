@@ -12,3 +12,15 @@ export const pickUser = (user: any): any => {
     'updatedAt'
   ])
 }
+export const pickAdmin = (user: any): any => {
+  return pick(user, [
+    '_id',
+    'email',
+    'username',
+    'displayName',
+    'role',
+    'isActive',
+    'createdAt',
+    'updatedAt'
+  ])
+}

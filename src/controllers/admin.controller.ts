@@ -1,30 +1,30 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import {
-  CreateUserRequest,
-  CreateUserResponse,
+  CreateAdminRequest,
+  CreateAdminResponse,
   VerifyEmailRequest,
   VerifyEmailResponse,
-  LoginRequest,
-  LoginResponse
-} from '~/types/user.type'
-import { userService } from '~/services/user.service'
+  AdminLoginRequest,
+  AdminLoginResponse
+} from '~/types/admin.type'
+import { adminService } from '~/services/admin.service'
 import ms from 'ms'
 import { env } from '~/configs/environment'
 
 const createNew = async (
-  req: Request<{}, {}, CreateUserRequest, {}>,
-  res: Response<CreateUserResponse>,
+  req: Request<{}, {}, CreateAdminRequest, {}>,
+  res: Response<CreateAdminResponse>,
   next: NextFunction
 ) => {
   try {
-    const createUser = await userService.createNew(req)
+    const result = await adminService.createNew(req)
 
-    res.status(StatusCodes.CREATED).send({
-      message: 'User created successfully',
-      data: createUser
+    res.status(StatusCodes.CREATED).json({
+      message: 'Admin created successfully',
+      data: result
     })
-  } catch (error: any) {
+  } catch (error) {
     next(error)
   }
 }
@@ -33,25 +33,26 @@ const verifyEmail = async (
   req: Request<{}, {}, VerifyEmailRequest, {}>,
   res: Response<VerifyEmailResponse>,
   next: NextFunction
-): Promise<void> => {
+) => {
   try {
-    const result = await userService.verifyEmail(req)
+    const result = await adminService.verifyEmail(req)
+
     res.status(StatusCodes.OK).json({
       message: 'Email verified successfully',
       data: result
     })
-  } catch (error: any) {
+  } catch (error) {
     next(error)
   }
 }
 
 const login = async (
-  req: Request<{}, {}, LoginRequest, {}>,
-  res: Response<LoginResponse>,
+  req: Request<{}, {}, AdminLoginRequest, {}>,
+  res: Response<AdminLoginResponse>,
   next: NextFunction
-): Promise<void> => {
+) => {
   try {
-    const result = await userService.login(req)
+    const result = await adminService.login(req)
 
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true, // security: only server can access cookie
@@ -75,12 +76,12 @@ const login = async (
       message: 'Login successful',
       data: result
     })
-  } catch (error: any) {
+  } catch (error) {
     next(error)
   }
 }
 
-export const userController = {
+export const adminController = {
   createNew,
   verifyEmail,
   login

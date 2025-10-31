@@ -11,7 +11,7 @@ const USER_COLLECTION_SCHEMA: Joi.ObjectSchema<IUser> = Joi.object({
   password: Joi.string().pattern(PASSWORD_RULE).required(),
   displayName: Joi.string().min(3).max(100).required(),
   role: Joi.string().default(USER_ROLES.MEMBER),
-  isActive: Joi.boolean().default(true),
+  isActive: Joi.boolean().default(false),
   verifyToken: Joi.string().optional(),
   heightCm: Joi.number().optional().allow(null),
   weightKg: Joi.number().optional().allow(null),
