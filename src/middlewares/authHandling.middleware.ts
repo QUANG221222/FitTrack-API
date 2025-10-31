@@ -82,6 +82,21 @@ const isAuthorized = (req: Request, _res: Response, next: NextFunction) => {
   }
 }
 
+const isAdmin = (req: Request, _res: Response, next: NextFunction) => {
+  try {
+    if (req.jwtDecoded?.role !== 'admin') {
+      next(new ApiError(StatusCodes.FORBIDDEN, 'Forbidden request'))
+      return
+    }
+    next()
+  } catch (error: any) {
+    next(
+      new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Internal server error')
+    )
+  }
+}
+
 export const authHandlingMiddleware = {
-  isAuthorized
+  isAuthorized,
+  isAdmin
 }
