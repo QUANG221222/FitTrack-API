@@ -1,7 +1,13 @@
 import { JwtProvider } from '~/providers/JwtProvider'
 import { env } from '~/configs/environment'
+import { adminModel } from '~/models/admin.model'
+import { userModel } from '~/models/user.model'
+import ApiError from '~/utils/ApiError'
+import { StatusCodes } from 'http-status-codes'
+import bcrypt from 'bcryptjs'
+import { pickUser } from '~/utils/fomatter'
 
-const refreshToken = async (clientRefreshToken: string) => {
+const refreshToken = async (clientRefreshToken: string): Promise<any> => {
   try {
     // Verify token received from client
     const refreshTokenDecoded = JwtProvider.verifyToken(
@@ -32,6 +38,66 @@ const refreshToken = async (clientRefreshToken: string) => {
   }
 }
 
+const login = async (req: any) => {
+  try {
+    const { email, password } = req.body
+
+    let existingUser: any = null
+
+    const adminAccount = await adminModel.findOneByEmail(email)
+    const userAccount = await userModel.findOneByEmail(email)
+
+    if (!adminAccount && !userAccount) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+    } else if (adminAccount) {
+      existingUser = adminAccount
+    } else if (userAccount) {
+      existingUser = userAccount
+    }
+
+    if (!existingUser.isActive) {
+      throw new ApiError(
+        StatusCodes.NOT_ACCEPTABLE,
+        'Your account is not active! Please verify your email!'
+      )
+    }
+
+    if (!bcrypt.compareSync(password, existingUser.password)) {
+      throw new ApiError(
+        StatusCodes.NOT_ACCEPTABLE,
+        'Your Email of Password is incorrect!'
+      )
+    }
+
+    const userInfo = {
+      id: existingUser._id,
+      email: existingUser.email,
+      role: existingUser.role
+    }
+
+    const accessToken = await JwtProvider.generateToken(
+      userInfo,
+      env.ACCESS_TOKEN_SECRET_SIGNATURE as string,
+      env.ACCESS_TOKEN_LIFE as string
+    )
+
+    const refreshToken = await JwtProvider.generateToken(
+      userInfo,
+      env.REFRESH_TOKEN_SECRET_SIGNATURE as string,
+      env.REFRESH_TOKEN_LIFE as string
+    )
+
+    return {
+      accessToken,
+      refreshToken,
+      ...pickUser(existingUser)
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 export const authService = {
-  refreshToken
+  refreshToken,
+  login
 }

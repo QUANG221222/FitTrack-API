@@ -4,13 +4,9 @@ import {
   CreateAdminRequest,
   CreateAdminResponse,
   VerifyEmailRequest,
-  VerifyEmailResponse,
-  AdminLoginRequest,
-  AdminLoginResponse
+  VerifyEmailResponse
 } from '~/types/admin.type'
 import { adminService } from '~/services/admin.service'
-import ms from 'ms'
-import { env } from '~/configs/environment'
 
 const createNew = async (
   req: Request<{}, {}, CreateAdminRequest, {}>,
@@ -46,43 +42,7 @@ const verifyEmail = async (
   }
 }
 
-const login = async (
-  req: Request<{}, {}, AdminLoginRequest, {}>,
-  res: Response<AdminLoginResponse>,
-  next: NextFunction
-) => {
-  try {
-    const result = await adminService.login(req)
-
-    res.cookie('accessToken', result.accessToken, {
-      httpOnly: true, // security: only server can access cookie
-      secure: env.BUILD_MODE === 'production', // true: only send cookie over HTTPS
-      sameSite: (env.BUILD_MODE === 'production' ? 'none' : 'lax') as
-        | 'none'
-        | 'lax', // CSRF protection
-      maxAge: ms('14 days')
-    })
-
-    res.cookie('refreshToken', result.refreshToken, {
-      httpOnly: true,
-      secure: env.BUILD_MODE === 'production',
-      sameSite: (env.BUILD_MODE === 'production' ? 'none' : 'lax') as
-        | 'none'
-        | 'lax',
-      maxAge: ms('14 days')
-    })
-
-    res.status(StatusCodes.OK).json({
-      message: 'Login successful',
-      data: result
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
 export const adminController = {
   createNew,
-  verifyEmail,
-  login
+  verifyEmail
 }

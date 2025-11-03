@@ -8,6 +8,4 @@ Router.post('/register', adminValidation.createNew, adminController.createNew)
 
 Router.post('/verify', adminValidation.verifyEmail, adminController.verifyEmail)
 
-Router.post('/login', adminValidation.login, adminController.login)
-
 export const adminRoutes: express.Router = Router
