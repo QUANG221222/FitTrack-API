@@ -13,8 +13,6 @@ Router.route('/verify').post(
   userController.verifyEmail
 )
 
-Router.route('/login').post(userValidation.login, userController.login)
-
 Router.put(
   '/profile',
   authHandlingMiddleware.isAuthorized,

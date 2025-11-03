@@ -7,7 +7,6 @@ import bcrypt from 'bcryptjs'
 import { pickAdmin } from '~/utils/fomatter'
 import { BrevoProvider } from '~/providers/BrevoProvider'
 import { WEBSITE_DOMAIN } from '~/utils/constants'
-import { JwtProvider } from '~/providers/JwtProvider'
 
 const createNew = async (req: any) => {
   try {
@@ -129,59 +128,7 @@ const verifyEmail = async (req: any) => {
   }
 }
 
-const login = async (req: any) => {
-  try {
-    const { email, password } = req.body
-
-    const admin = await adminModel.findOneByEmail(email)
-
-    if (!admin) {
-      throw new ApiError(StatusCodes.NOT_FOUND, 'Admin not found')
-    }
-    if (!admin.isActive) {
-      throw new ApiError(
-        StatusCodes.NOT_ACCEPTABLE,
-        'Your admin account is not active! Please verify your email!'
-      )
-    }
-
-    if (!bcrypt.compareSync(password, admin.password)) {
-      throw new ApiError(
-        StatusCodes.NOT_ACCEPTABLE,
-        'Your Email of Password is incorrect!'
-      )
-    }
-
-    const adminInfo = {
-      id: admin._id,
-      email: admin.email,
-      role: admin.role
-    }
-
-    const accessToken = await JwtProvider.generateToken(
-      adminInfo,
-      env.ACCESS_TOKEN_SECRET_SIGNATURE as string,
-      env.ACCESS_TOKEN_LIFE as string
-    )
-
-    const refreshToken = await JwtProvider.generateToken(
-      adminInfo,
-      env.REFRESH_TOKEN_SECRET_SIGNATURE as string,
-      env.REFRESH_TOKEN_LIFE as string
-    )
-
-    return {
-      accessToken,
-      refreshToken,
-      ...pickAdmin(admin)
-    }
-  } catch (error) {
-    throw error
-  }
-}
-
 export const adminService = {
   createNew,
-  verifyEmail,
-  login
+  verifyEmail
 }
