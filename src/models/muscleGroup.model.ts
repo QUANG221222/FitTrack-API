@@ -1,18 +1,19 @@
 import { GET_DB } from '~/configs/mongodb'
 import { ObjectId } from 'mongodb'
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validator'
 import Joi from 'joi'
 import { IMuscleGroup } from '~/types/muscleGroup.type'
 
 const COLLECTION_NAME = 'muscle_groups'
 
 const MUSCLE_GROUP_COLLECTION_SCHEMA = Joi.object<IMuscleGroup>({
-  _id: Joi.string().optional(),
+  _id: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
   name: Joi.string().min(2).max(100).required(),
   description: Joi.string().max(500).optional().allow(''),
   imageUrl: Joi.string().uri().optional().allow(null),
   imagePublicId: Joi.string().optional().allow(null),
-  createdAt: Joi.date().default(Date.now),
-  updatedAt: Joi.date().default(Date.now)
+  createdAt: Joi.date().timestamp('javascript').default(Date.now),
+  updatedAt: Joi.date().timestamp('javascript').default(null)
 })
 
 const INVALID_UPDATE_FIELDS = ['_id', 'createdAt']

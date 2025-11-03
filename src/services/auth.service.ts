@@ -14,7 +14,7 @@ const refreshToken = async (clientRefreshToken: string) => {
     // We only store unique, immutable user info in the refresh token (e.g. _id, email),
     // so we can reuse the decoded payload directly instead of querying the database.
     const userInfo = {
-      _id: (refreshTokenDecoded as any)._id as string,
+      id: (refreshTokenDecoded as any).id as string,
       email: (refreshTokenDecoded as any).email as string,
       role: (refreshTokenDecoded as any).role as string
     }

@@ -1,8 +1,9 @@
 import express from 'express'
 import { userRoutes } from './user.routes'
 import { adminRoutes } from './admin.routes'
-import { authRoutes } from './auth.routes'
 import { muscleGroupRoutes } from './muscleGroup.routes'
+import { exerciseRoutes } from './exercise.routes'
+import { authRoutes } from './auth.routes'
 
 const Router = express.Router()
 
@@ -11,6 +12,8 @@ Router.use('/users', userRoutes)
 Router.use('/admins', adminRoutes)
 
 Router.use('/muscle-groups', muscleGroupRoutes)
+
+Router.use('/exercises', exerciseRoutes)
 
 Router.use('/auth', authRoutes)
 

@@ -5,6 +5,8 @@ import { IAdmin } from '~/types/admin.type'
 import {
   EMAIL_RULE,
   EMAIL_RULE_MESSAGE,
+  OBJECT_ID_RULE,
+  OBJECT_ID_RULE_MESSAGE,
   PASSWORD_RULE,
   PASSWORD_RULE_MESSAGE,
   USER_ROLES
@@ -12,7 +14,7 @@ import {
 
 const COLLECTION_NAME = 'admins'
 const ADMIN_COLLECTION_SCHEMA = Joi.object<IAdmin>({
-  _id: Joi.string().optional(),
+  _id: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
   email: Joi.string()
     .pattern(EMAIL_RULE)
     .message(EMAIL_RULE_MESSAGE)
@@ -30,8 +32,8 @@ const ADMIN_COLLECTION_SCHEMA = Joi.object<IAdmin>({
   verifyToken: Joi.string().allow('').optional(),
   avatar: Joi.string().uri().allow(null).optional(),
   avatarPublicId: Joi.string().allow(null).optional(),
-  createdAt: Joi.date().default(Date.now),
-  updatedAt: Joi.date().default(Date.now)
+  createdAt: Joi.date().timestamp('javascript').default(Date.now),
+  updatedAt: Joi.date().timestamp('javascript').default(null)
 })
 const INVALID_UPDATE_FIELDS = ['_id', 'email', 'password', 'role', 'createdAt']
 
