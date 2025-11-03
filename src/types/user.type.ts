@@ -52,10 +52,6 @@ export interface LoginResponse {
   }
 }
 
-export interface RefreshTokenRequest {
-  refreshToken: string
-}
-
 export interface UpdateUserRequest {
   displayName?: string
   gender?: string

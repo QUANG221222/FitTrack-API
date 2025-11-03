@@ -45,3 +45,23 @@ export const pickMuscleGroup = (muscleGroup: any): any => {
     'updatedAt'
   ])
 }
+
+export const pickExercise = (exercise: any): any => {
+  return pick(exercise, [
+    '_id',
+    'adminId',
+    'name',
+    'description',
+    'type',
+    'difficulty',
+    'equipment',
+    'mediaVideoUrl',
+    'mediaImageUrl',
+    'mediaImagePublicId',
+    'primaryMuscles',
+    'secondaryMuscles',
+    'isPublic',
+    'createdAt',
+    'updatedAt'
+  ])
+}

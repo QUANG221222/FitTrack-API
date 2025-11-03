@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
-import { RefreshTokenRequest, RefreshTokenResponse } from '~/types/user.type'
+import { RefreshTokenRequest, RefreshTokenResponse } from '~/types/auth.type'
 import { authService } from '~/services/auth.service'
 import { env } from '~/configs/environment'
 import ms from 'ms'

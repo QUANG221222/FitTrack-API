@@ -7,7 +7,7 @@ const createCloudinaryStorage = (folderName: string) => {
     cloudinary: cloudinary,
     params: {
       folder: `fittrack/${folderName}`,
-      allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+      allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
       transformation: [
         { width: 800, height: 800, crop: 'limit' },
         { quality: 'auto' }
@@ -32,12 +32,17 @@ const createUpload = (folderName: string) => {
         'image/jpeg',
         'image/jpg',
         'image/png',
-        'image/webp'
+        'image/webp',
+        'image/gif'
       ]
       if (allowedMimes.includes(file.mimetype)) {
         cb(null, true)
       } else {
-        cb(new Error('Invalid file type. Only JPEG, PNG and WebP are allowed.'))
+        cb(
+          new Error(
+            'Invalid file type. Only JPEG, PNG, WebP and GIF are allowed.'
+          )
+        )
       }
     }
   })
@@ -47,38 +52,6 @@ const uploadUser = createUpload('user')
 const uploadAdmin = createUpload('admin')
 const uploadExercise = createUpload('exercise')
 const uploadMuscleGroup = createUpload('muscle-groups')
-
-// const storage = new CloudinaryStorage({
-//   cloudinary: cloudinary,
-//   params: {
-//     folder: 'fittrack',
-//     allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-//     transformation: [
-//       { width: 800, height: 800, crop: 'limit' },
-//       { quality: 'auto' }
-//     ],
-//     public_id: (_req: any, file: any) => {
-//       const timestamp = Date.now()
-//       const originalName = file.originalname.split('.')[0]
-//       return `cosmetic_${originalName}_${timestamp}`
-//     }
-//   } as any
-// })
-
-// const upload = multer({
-//   storage,
-//   limits: {
-//     fileSize: 5 * 1024 * 1024
-//   },
-//   fileFilter: (_req, file, cb) => {
-//     const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
-//     if (allowedMimes.includes(file.mimetype)) {
-//       cb(null, true)
-//     } else {
-//       cb(new Error('Invalid file type. Only JPEG, PNG and WebP are allowed.'))
-//     }
-//   }
-// })
 
 const deleteImage = async (publicId: string): Promise<void> => {
   try {

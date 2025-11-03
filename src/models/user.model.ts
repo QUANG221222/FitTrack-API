@@ -1,5 +1,6 @@
 import { GET_DB } from '~/configs/mongodb'
 import { ObjectId } from 'mongodb'
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validator'
 import Joi from 'joi'
 import { IUser } from '~/types/user.type'
 import { EMAIL_RULE, PASSWORD_RULE, USER_ROLES } from '~/utils/validator'
@@ -7,6 +8,7 @@ import { EMAIL_RULE, PASSWORD_RULE, USER_ROLES } from '~/utils/validator'
 const COLLECTION_NAME = 'users'
 
 const USER_COLLECTION_SCHEMA: Joi.ObjectSchema<IUser> = Joi.object({
+  _id: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
   email: Joi.string().pattern(EMAIL_RULE).required(),
   password: Joi.string().pattern(PASSWORD_RULE).required(),
   displayName: Joi.string().min(3).max(100).required(),
