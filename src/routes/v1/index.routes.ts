@@ -4,6 +4,7 @@ import { adminRoutes } from './admin.routes'
 import { muscleGroupRoutes } from './muscleGroup.routes'
 import { exerciseRoutes } from './exercise.routes'
 import { authRoutes } from './auth.routes'
+import { workoutPlanRoutes } from './workoutPlan.routes'
 
 const Router = express.Router()
 
@@ -17,6 +18,6 @@ Router.use('/exercises', exerciseRoutes)
 
 Router.use('/auth', authRoutes)
 
-Router.use
+Router.use('/workout-plans', workoutPlanRoutes)
 
 export const APIs_V1: express.Router = Router
