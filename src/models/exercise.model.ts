@@ -15,7 +15,7 @@ const EXERCISE_COLLECTION_SCHEMA = Joi.object<IExercise>({
   name: Joi.string().min(2).max(200).required(),
   description: Joi.string().max(1000).optional().allow(''),
   type: Joi.string()
-    .valid('strength', 'cardio', 'mobility', 'flexibility')
+    .valid('strength', 'cardio', 'mobility', 'flexibility', 'calisthenics')
     .required(),
   difficulty: Joi.string()
     .valid('beginner', 'intermediate', 'advance')

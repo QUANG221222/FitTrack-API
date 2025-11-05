@@ -5,7 +5,7 @@ export interface IExercise {
   adminId: ObjectId
   name: string
   description?: string
-  type: 'strength' | 'cardio' | 'mobility' | 'flexibility'
+  type: 'strength' | 'cardio' | 'mobility' | 'flexibility' | 'calisthenics'
   difficulty: 'beginner' | 'intermediate' | 'advance'
   equipment?: string
   mediaVideoUrl?: string
