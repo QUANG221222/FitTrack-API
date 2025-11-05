@@ -28,6 +28,15 @@ const login = async (
       maxAge: ms('14 days')
     })
 
+    res.cookie('refreshToken', result.refreshToken, {
+      httpOnly: true,
+      secure: env.BUILD_MODE === 'production',
+      sameSite: (env.BUILD_MODE === 'production' ? 'none' : 'lax') as
+        | 'none'
+        | 'lax',
+      maxAge: ms('14 days')
+    })
+
     res.status(StatusCodes.OK).json({
       message: 'Login successful',
       data: result

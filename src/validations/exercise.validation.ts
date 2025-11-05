@@ -16,11 +16,11 @@ const createNew = async (req: Request, _res: Response, next: NextFunction) => {
       'string.max': 'Description must be at most 1000 characters long'
     }),
     type: Joi.string()
-      .valid('strength', 'cardio', 'mobility', 'flexibility')
+      .valid('strength', 'cardio','calisthenics', 'mobility', 'flexibility')
       .required()
       .messages({
         'any.only':
-          'Type must be one of: strength, cardio, mobility, flexibility',
+          'Type must be one of: strength, cardio, calisthenics, mobility, flexibility',
         'any.required': 'Type is required'
       }),
     difficulty: Joi.string()

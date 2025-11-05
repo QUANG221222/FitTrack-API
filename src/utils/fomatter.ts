@@ -80,3 +80,19 @@ export const pickWorkoutPlan = (workoutPlan: any): any => {
     'updatedAt'
   ])
 }
+
+export const pickWorkoutSession = (workoutSession: any): any => {
+  return pick(workoutSession, [
+    '_id',
+    'userId',
+    'planId',
+    'startTime',
+    'endTime',
+    'mood',
+    'energyLevel',
+    'note',
+    'exercises',
+    'createdAt',
+    'updatedAt'
+  ])
+}
