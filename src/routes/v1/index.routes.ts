@@ -8,6 +8,7 @@ import { workoutPlanRoutes } from './workoutPlan.routes'
 import { workoutSessionRoutes } from './workoutSession.routes'
 import { metricEntryRoutes } from './metricEntry.routes'
 import { goalRoutes } from './goal.routes'
+import { progressPhotoRoutes } from './progressPhoto.routes'
 
 const Router = express.Router()
 
@@ -28,5 +29,7 @@ Router.use('/workout-sessions', workoutSessionRoutes)
 Router.use('/metric-entries', metricEntryRoutes)
 
 Router.use('/goals', goalRoutes)
+
+Router.use('/progress-photos', progressPhotoRoutes)
 
 export const APIs_V1: express.Router = Router
