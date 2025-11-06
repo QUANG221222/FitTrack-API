@@ -104,6 +104,21 @@ const verifyEmail = async (req: Request): Promise<any> => {
   }
 }
 
+const getProfile = async (req: Request): Promise<any> => {
+  try {
+    const userId = req.jwtDecoded.id
+
+    const user = await userModel.findOneById(userId)
+    if (!user) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+    }
+
+    return pickUser(user)
+  } catch (error) {
+    throw error
+  }
+}
+
 const update = async (req: Request): Promise<any> => {
   try {
     // Get user ID from JWT token
@@ -138,5 +153,6 @@ const update = async (req: Request): Promise<any> => {
 export const userService = {
   createNew,
   verifyEmail,
+  getProfile,
   update
 }

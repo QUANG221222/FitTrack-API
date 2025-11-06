@@ -18,6 +18,11 @@ export interface IUser {
   updatedAt: Date | null
 }
 
+export interface GetUserResponse {
+  message: string
+  data: Partial<IUser>
+}
+
 export interface CreateUserRequest {
   email: string
   password: string
