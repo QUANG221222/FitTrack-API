@@ -22,6 +22,7 @@ const EXERCISE_COLLECTION_SCHEMA = Joi.object<IExercise>({
     .default('beginner'),
   equipment: Joi.string().max(200).optional().allow(''),
   mediaVideoUrl: Joi.string().uri().optional().allow(''),
+  mediaVideoPublicId: Joi.string().optional().allow(''),
   mediaImageUrl: Joi.string().uri().optional().allow(null),
   mediaImagePublicId: Joi.string().optional().allow(null),
   primaryMuscles: Joi.array()

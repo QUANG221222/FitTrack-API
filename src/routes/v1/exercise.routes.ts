@@ -38,4 +38,14 @@ Router.delete(
   exerciseController.deleteOne
 )
 
+// New route for uploading video
+Router.put(
+  '/:id/upload-video',
+  authHandlingMiddleware.isAuthorized,
+  authHandlingMiddleware.isAdmin,
+  CloudinaryProvider.uploadExerciseVideo.single('video'),
+  exerciseValidation.validateId,
+  exerciseController.uploadVideo
+)
+
 export const exerciseRoutes: express.Router = Router

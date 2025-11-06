@@ -7,7 +7,8 @@ import {
   UpdateExerciseResponse,
   GetExerciseResponse,
   GetAllExercisesResponse,
-  DeleteExerciseResponse
+  DeleteExerciseResponse,
+  UploadExerciseVideoResponse
 } from '~/types/exercise.type'
 import { exerciseService } from '~/services/exercise.service'
 
@@ -95,10 +96,28 @@ const deleteOne = async (
   }
 }
 
+const uploadVideo = async (
+  req: Request<{ id: string }, {}, {}, {}>,
+  res: Response<UploadExerciseVideoResponse>,
+  next: NextFunction
+) => {
+  try {
+    const result = await exerciseService.uploadVideo(req)
+
+    res.status(StatusCodes.OK).json({
+      message: 'Video uploaded successfully',
+      data: result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const exerciseController = {
   createNew,
   getAll,
   getOneById,
   update,
-  deleteOne
+  deleteOne,
+  uploadVideo
 }
