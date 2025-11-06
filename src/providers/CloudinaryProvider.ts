@@ -49,6 +49,7 @@ const createUpload = (folderName: string) => {
 }
 
 const uploadUser = createUpload('user')
+const uploadProgressPhoto = createUpload('progress-photos')
 const uploadAdmin = createUpload('admin')
 const uploadExercise = createUpload('exercise')
 const uploadMuscleGroup = createUpload('muscle-groups')
@@ -66,5 +67,6 @@ export const CloudinaryProvider = {
   uploadAdmin,
   uploadExercise,
   uploadMuscleGroup,
+  uploadProgressPhoto,
   deleteImage
 }

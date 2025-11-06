@@ -129,3 +129,18 @@ export const pickGoal = (goal: any): any => {
     'updatedAt'
   ])
 }
+
+export const pickProgressPhoto = (progressPhoto: any): any => {
+  return pick(progressPhoto, [
+    '_id',
+    'userId',
+    'takenAt',
+    'view',
+    'imageUrl',
+    'imagePublicId',
+    'note',
+    'blurhash',
+    'createdAt',
+    'updatedAt'
+  ])
+}
