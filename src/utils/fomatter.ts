@@ -96,3 +96,17 @@ export const pickWorkoutSession = (workoutSession: any): any => {
     'updatedAt'
   ])
 }
+
+export const pickMetricEntry = (metricEntry: any): any => {
+  return pick(metricEntry, [
+    '_id',
+    'userId',
+    'metricCode',
+    'value',
+    'unit',
+    'note',
+    'measureAt',
+    'createdAt',
+    'updatedAt'
+  ])
+}

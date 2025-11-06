@@ -6,6 +6,7 @@ import { exerciseRoutes } from './exercise.routes'
 import { authRoutes } from './auth.routes'
 import { workoutPlanRoutes } from './workoutPlan.routes'
 import { workoutSessionRoutes } from './workoutSession.routes'
+import { metricEntryRoutes } from './metricEntry.routes'
 
 const Router = express.Router()
 
@@ -22,5 +23,7 @@ Router.use('/auth', authRoutes)
 Router.use('/workout-plans', workoutPlanRoutes)
 
 Router.use('/workout-sessions', workoutSessionRoutes)
+
+Router.use('/metric-entries', metricEntryRoutes)
 
 export const APIs_V1: express.Router = Router
