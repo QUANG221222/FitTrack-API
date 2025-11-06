@@ -110,3 +110,22 @@ export const pickMetricEntry = (metricEntry: any): any => {
     'updatedAt'
   ])
 }
+
+export const pickGoal = (goal: any): any => {
+  return pick(goal, [
+    '_id',
+    'userId',
+    'goalType',
+    'targetValue',
+    'unit',
+    'startValue',
+    'startDate',
+    'targetDate',
+    'status',
+    'note',
+    'metricCode',
+    'exerciseId',
+    'createdAt',
+    'updatedAt'
+  ])
+}
