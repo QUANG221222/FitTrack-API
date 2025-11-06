@@ -144,3 +144,14 @@ export const pickProgressPhoto = (progressPhoto: any): any => {
     'updatedAt'
   ])
 }
+
+export const pickBlog = (blog: any): any => {
+  return pick(blog, [
+    '_id',
+    'name',
+    'description',
+    'content',
+    'createdAt',
+    'updatedAt'
+  ])
+}
