@@ -91,9 +91,33 @@ const update = async (id: string, data: Partial<IUser>): Promise<any> => {
   }
 }
 
+const findAllUsers = async (): Promise<IUser[]> => {
+  try {
+    const result = await GET_DB().collection(COLLECTION_NAME).find({}).toArray()
+
+    return result as IUser[]
+  } catch (error: any) {
+    throw new Error(error)
+  }
+}
+
+const deleteUser = async (id: string): Promise<any> => {
+  try {
+    const result = await GET_DB()
+      .collection(COLLECTION_NAME)
+      .deleteOne({ _id: new ObjectId(id) })
+
+    return result
+  } catch (error: any) {
+    throw new Error(error)
+  }
+}
+
 export const userModel = {
   findOneByEmail,
   createNew,
   findOneById,
-  update
+  deleteUser,
+  update,
+  findAllUsers
 }

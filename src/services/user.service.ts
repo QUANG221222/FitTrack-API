@@ -44,7 +44,7 @@ const createNew = async (req: Request): Promise<any> => {
     }
 
     // Send a welcome email to the new user
-    const verificationLink = `${WEBSITE_DOMAIN}/users/account/verification?email=${getNewUser.email}&token=${getNewUser.verifyToken}`
+    const verificationLink = `${WEBSITE_DOMAIN}/user/account/verification?email=${getNewUser.email}&token=${getNewUser.verifyToken}`
     const customSubject =
       'FitTrack: Please verify your email before using our services!'
     const htmlContent = `

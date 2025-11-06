@@ -48,3 +48,20 @@ export interface AdminLoginResponse {
     refreshToken: string
   }
 }
+
+export interface UpdateAdminRequest {
+  displayName?: string
+  avatar?: string
+  avatarPublicId?: string
+  isActive?: boolean
+}
+
+export interface UpdateAdminResponse {
+  message: string
+  data: Partial<IAdmin>
+}
+
+export interface GetAdminResponse {
+  message: string
+  data: Partial<IAdmin>
+}
