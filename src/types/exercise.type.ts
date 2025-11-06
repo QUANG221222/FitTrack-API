@@ -9,6 +9,7 @@ export interface IExercise {
   difficulty: 'beginner' | 'intermediate' | 'advance'
   equipment?: string
   mediaVideoUrl?: string
+  mediaVideoPublicId?: string
   mediaImageUrl?: string
   mediaImagePublicId?: string
   primaryMuscles: ObjectId[]
@@ -24,7 +25,6 @@ export interface CreateExerciseRequest {
   type: 'strength' | 'cardio' | 'mobility' | 'flexibility'
   difficulty?: 'beginner' | 'intermediate' | 'advance'
   equipment?: string
-  mediaVideoUrl?: string
   primaryMuscles: string[]
   secondaryMuscles?: string[]
   isPublic?: boolean
@@ -41,7 +41,6 @@ export interface UpdateExerciseRequest {
   type?: 'strength' | 'cardio' | 'mobility' | 'flexibility'
   difficulty?: 'beginner' | 'intermediate' | 'advance'
   equipment?: string
-  mediaVideoUrl?: string
   primaryMuscles?: string[]
   secondaryMuscles?: string[]
   isPublic?: boolean
@@ -64,4 +63,16 @@ export interface GetAllExercisesResponse {
 
 export interface DeleteExerciseResponse {
   message: string
+}
+
+export interface UploadExerciseVideoRequest {
+  exerciseId: string
+}
+
+export interface UploadExerciseVideoResponse {
+  message: string
+  data: {
+    mediaVideoUrl: string
+    mediaVideoPublicId: string
+  }
 }

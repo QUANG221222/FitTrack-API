@@ -14,7 +14,6 @@ const createNew = async (req: Request): Promise<any> => {
       type,
       difficulty,
       equipment,
-      mediaVideoUrl,
       primaryMuscles,
       secondaryMuscles,
       isPublic
@@ -66,7 +65,6 @@ const createNew = async (req: Request): Promise<any> => {
       type,
       difficulty: difficulty || 'beginner',
       equipment: equipment || '',
-      mediaVideoUrl: mediaVideoUrl || '',
       primaryMuscles: primaryMuscles || [],
       secondaryMuscles: secondaryMuscles || [],
       isPublic: isPublic !== undefined ? isPublic : true
@@ -235,6 +233,11 @@ const deleteOne = async (req: Request): Promise<any> => {
       await CloudinaryProvider.deleteImage(exercise.mediaImagePublicId)
     }
 
+    // Delete video from Cloudinary if exists
+    if (exercise.mediaVideoPublicId) {
+      await CloudinaryProvider.deleteVideo(exercise.mediaVideoPublicId)
+    }
+
     // Delete exercise from database
     const deleted = await exerciseModel.deleteOne(id)
 
@@ -251,10 +254,62 @@ const deleteOne = async (req: Request): Promise<any> => {
   }
 }
 
+const uploadVideo = async (req: Request): Promise<any> => {
+  try {
+    const { id } = req.params
+    const adminId = req.jwtDecoded.id || req.jwtDecoded._id
+
+    // Find exercise
+    const exercise = await exerciseModel.findOneById(id)
+    if (!exercise) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Exercise not found')
+    }
+
+    // Check if admin is the owner
+    if (exercise.adminId.toString() !== adminId.toString()) {
+      throw new ApiError(
+        StatusCodes.FORBIDDEN,
+        'You are not authorized to upload video for this exercise'
+      )
+    }
+
+    if (req.file) {
+      // Delete old video from Cloudinary if exists
+      if (exercise.mediaVideoPublicId) {
+        await CloudinaryProvider.deleteVideo(exercise.mediaVideoPublicId)
+      }
+
+      // Prepare update data
+      req.body.mediaVideoUrl = req.file.path
+      req.body.mediaVideoPublicId = req.file.filename
+    }
+
+    const updateData = {
+      ...req.body,
+      updatedAt: Date.now()
+    }
+
+    // Update exercise in database
+    const updatedExercise = await exerciseModel.update(id, updateData)
+
+    if (!updatedExercise) {
+      throw new ApiError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        'Failed to upload video'
+      )
+    }
+
+    return pickExercise(updatedExercise)
+  } catch (error) {
+    throw error
+  }
+}
+
 export const exerciseService = {
   createNew,
   getAll,
   getOneById,
   update,
-  deleteOne
+  deleteOne,
+  uploadVideo
 }

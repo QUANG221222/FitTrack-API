@@ -16,7 +16,7 @@ const createNew = async (req: Request, _res: Response, next: NextFunction) => {
       'string.max': 'Description must be at most 1000 characters long'
     }),
     type: Joi.string()
-      .valid('strength', 'cardio','calisthenics', 'mobility', 'flexibility')
+      .valid('strength', 'cardio', 'calisthenics', 'mobility', 'flexibility')
       .required()
       .messages({
         'any.only':
@@ -31,9 +31,6 @@ const createNew = async (req: Request, _res: Response, next: NextFunction) => {
       }),
     equipment: Joi.string().max(200).optional().allow('').messages({
       'string.max': 'Equipment must be at most 200 characters long'
-    }),
-    mediaVideoUrl: Joi.string().uri().optional().allow('').messages({
-      'string.uri': 'Media video URL must be a valid URL'
     }),
     primaryMuscles: Joi.array()
       .items(
@@ -91,9 +88,6 @@ const update = async (req: Request, _res: Response, next: NextFunction) => {
       }),
     equipment: Joi.string().max(200).optional().allow('').messages({
       'string.max': 'Equipment must be at most 200 characters long'
-    }),
-    mediaVideoUrl: Joi.string().uri().optional().allow('').messages({
-      'string.uri': 'Media video URL must be a valid URL'
     }),
     primaryMuscles: Joi.array()
       .items(

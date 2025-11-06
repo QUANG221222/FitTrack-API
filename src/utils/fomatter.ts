@@ -56,6 +56,7 @@ export const pickExercise = (exercise: any): any => {
     'difficulty',
     'equipment',
     'mediaVideoUrl',
+    'mediaVideoPublicId',
     'mediaImageUrl',
     'mediaImagePublicId',
     'primaryMuscles',
