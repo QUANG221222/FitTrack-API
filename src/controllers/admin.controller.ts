@@ -4,7 +4,9 @@ import {
   CreateAdminRequest,
   CreateAdminResponse,
   VerifyEmailRequest,
-  VerifyEmailResponse
+  VerifyEmailResponse,
+  GetAdminResponse,
+  UpdateAdminResponse
 } from '~/types/admin.type'
 import { adminService } from '~/services/admin.service'
 
@@ -42,7 +44,92 @@ const verifyEmail = async (
   }
 }
 
+const getProfile = async (
+  req: Request,
+  res: Response<GetAdminResponse>,
+  next: NextFunction
+) => {
+  try {
+    const result = await adminService.getProfile(req)
+
+    res.status(StatusCodes.OK).json({
+      message: 'Admin profile retrieved successfully',
+      data: result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+const update = async (
+  req: Request,
+  res: Response<UpdateAdminResponse>,
+  next: NextFunction
+) => {
+  try {
+    const result = await adminService.update(req)
+
+    res.status(StatusCodes.OK).json({
+      message: 'Admin profile updated successfully',
+      data: result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+const getAllUsers = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await adminService.getAllUsers()
+
+    res.status(StatusCodes.OK).json({
+      message: 'All users retrieved successfully',
+      data: result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+const deleteUser = async (
+  req: Request<{ id: string }, {}, {}, {}>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await adminService.deleteUser(req)
+
+    res.status(StatusCodes.OK).json({
+      message: 'User deleted successfully'
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await adminService.updateUser(req)
+
+    res.status(StatusCodes.OK).json({
+      message: 'User updated successfully',
+      data: result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const adminController = {
   createNew,
-  verifyEmail
+  verifyEmail,
+  update,
+  updateUser,
+  deleteUser,
+  getAllUsers,
+  getProfile
 }

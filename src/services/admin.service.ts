@@ -4,9 +4,11 @@ import { StatusCodes } from 'http-status-codes'
 import { env } from '~/configs/environment'
 import { v7 as uuidv7 } from 'uuid'
 import bcrypt from 'bcryptjs'
-import { pickAdmin } from '~/utils/fomatter'
+import { pickAdmin, pickUser } from '~/utils/fomatter'
 import { BrevoProvider } from '~/providers/BrevoProvider'
 import { WEBSITE_DOMAIN } from '~/utils/constants'
+import { CloudinaryProvider } from '~/providers/CloudinaryProvider'
+import { userModel } from '~/models/user.model'
 
 const createNew = async (req: any) => {
   try {
@@ -128,7 +130,138 @@ const verifyEmail = async (req: any) => {
   }
 }
 
+const update = async (req: any) => {
+  try {
+    const adminId = req.jwtDecoded.id
+
+    const admin = await adminModel.findOneById(adminId)
+    if (!admin) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Admin not found')
+    }
+
+    if (req.file) {
+      // Delete old avatar from Cloudinary if exists
+      if (admin.avatarPublicId) {
+        await CloudinaryProvider.deleteImage(admin.avatarPublicId)
+      }
+
+      req.body.avatar = req.file.path
+      req.body.avatarPublicId = req.file.filename
+    }
+
+    const updateData = {
+      ...req.body,
+      updatedAt: Date.now()
+    }
+
+    // Update admin profile
+    const result = await adminModel.update(adminId, updateData)
+
+    return pickAdmin(result)
+  } catch (error) {
+    throw error
+  }
+}
+
+const getProfile = async (req: any) => {
+  try {
+    const adminId = req.jwtDecoded.id
+
+    const admin = await adminModel.findOneById(adminId)
+    if (!admin) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Admin not found')
+    }
+
+    return pickAdmin(admin)
+  } catch (error) {
+    throw error
+  }
+}
+
+const getAllUsers = async () => {
+  try {
+    const users = await userModel.findAllUsers()
+
+    return users.map((user) => pickUser(user))
+  } catch (error) {
+    throw error
+  }
+}
+
+const deleteUser = async (req: any) => {
+  try {
+    const { id } = req.params
+
+    const user = await userModel.findOneById(id)
+    if (!user) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+    }
+
+    if (user.avatarPublicId) {
+      await CloudinaryProvider.deleteImage(user.avatarPublicId as string)
+    }
+
+    const result = await userModel.deleteUser(id)
+
+    if (!result) {
+      throw new ApiError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        'Failed to delete user'
+      )
+    }
+
+    return { deleted: true }
+  } catch (error) {
+    throw error
+  }
+}
+
+const updateUser = async (req: any) => {
+  try {
+    const { id } = req.params
+
+    const user = await userModel.findOneById(id)
+    if (!user) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+    }
+
+    if (
+      req.body &&
+      req.body.isActive !== undefined &&
+      req.body.isActive === true
+    ) {
+      req.body.verifyToken = ''
+    }
+
+    if (req.file) {
+      // Delete old avatar from Cloudinary if exists
+      if (user.avatarPublicId) {
+        await CloudinaryProvider.deleteImage(user.avatarPublicId)
+      }
+      req.body.avatar = req.file.path
+      req.body.avatarPublicId = req.file.filename
+    }
+
+    const updateData = {
+      ...req.body,
+      updatedAt: Date.now()
+    }
+
+    // Update user profile
+    const result = await userModel.update(id, updateData)
+
+    return pickUser(result)
+  } catch (error) {
+    throw error
+  }
+}
+
 export const adminService = {
   createNew,
-  verifyEmail
+  verifyEmail,
+  update,
+  getAllUsers,
+  updateUser,
+  deleteUser,
+  getProfile
 }
