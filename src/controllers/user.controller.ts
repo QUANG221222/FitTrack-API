@@ -5,7 +5,8 @@ import {
   CreateUserResponse,
   VerifyEmailRequest,
   VerifyEmailResponse,
-  UpdateUserResponse
+  UpdateUserResponse,
+  GetUserResponse
 } from '~/types/user.type'
 import { userService } from '~/services/user.service'
 
@@ -43,6 +44,23 @@ const verifyEmail = async (
   }
 }
 
+const getProfile = async (
+  req: Request,
+  res: Response<GetUserResponse>,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const result = await userService.getProfile(req)
+
+    res.status(StatusCodes.OK).json({
+      message: 'User profile retrieved successfully',
+      data: result
+    })
+  } catch (error: any) {
+    next(error)
+  }
+}
+
 const update = async (
   req: Request,
   res: Response<UpdateUserResponse>,
@@ -68,5 +86,6 @@ const update = async (
 export const userController = {
   createNew,
   verifyEmail,
+  getProfile,
   update
 }

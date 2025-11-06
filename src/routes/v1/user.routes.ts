@@ -13,6 +13,12 @@ Router.route('/verify').post(
   userController.verifyEmail
 )
 
+Router.get(
+  '/profile',
+  authHandlingMiddleware.isAuthorized,
+  userController.getProfile
+)
+
 Router.put(
   '/profile',
   authHandlingMiddleware.isAuthorized,
