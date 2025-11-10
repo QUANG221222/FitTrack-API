@@ -37,27 +37,6 @@ const createNew = async (req: Request, _res: Response, next: NextFunction) => {
   }
 }
 
-// Validate admin email verification request
-const verifyEmail = async (
-  req: Request,
-  _res: Response,
-  next: NextFunction
-) => {
-  const correctCondition = Joi.object({
-    email: Joi.string()
-      .pattern(EMAIL_RULE)
-      .message(EMAIL_RULE_MESSAGE)
-      .required(),
-    token: Joi.string().required()
-  })
-  try {
-    await correctCondition.validateAsync(req.body, { abortEarly: false })
-    next()
-  } catch (error: any) {
-    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
-  }
-}
-
 // Validate update admin profile request
 const update = async (req: Request, _res: Response, next: NextFunction) => {
   const correctCondition = Joi.object({
@@ -119,7 +98,6 @@ const updateUser = async (req: Request, _res: Response, next: NextFunction) => {
 
 export const adminValidation = {
   createNew,
-  verifyEmail,
   update,
   updateUser,
   validateId

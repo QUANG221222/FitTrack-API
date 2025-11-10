@@ -74,36 +74,6 @@ const createNew = async (req: Request): Promise<any> => {
   }
 }
 
-const verifyEmail = async (req: Request): Promise<any> => {
-  try {
-    const user = await userModel.findOneByEmail(req.body.email as string)
-    if (!user) {
-      throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
-    }
-    if (user.isActive) {
-      throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'User already verified')
-    }
-    if (user.verifyToken !== req.body.token) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid token')
-    }
-    const updateUser = {
-      isActive: true,
-      verifyToken: ''
-    }
-    if (!user._id) {
-      throw new ApiError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        'User ID is missing'
-      )
-    }
-    const result = await userModel.update(user._id.toString(), updateUser)
-
-    return pickUser(result)
-  } catch (error) {
-    throw error
-  }
-}
-
 const getProfile = async (req: Request): Promise<any> => {
   try {
     const userId = req.jwtDecoded.id
@@ -152,7 +122,6 @@ const update = async (req: Request): Promise<any> => {
 
 export const userService = {
   createNew,
-  verifyEmail,
   getProfile,
   update
 }

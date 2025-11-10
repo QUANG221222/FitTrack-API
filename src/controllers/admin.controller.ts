@@ -3,8 +3,6 @@ import { StatusCodes } from 'http-status-codes'
 import {
   CreateAdminRequest,
   CreateAdminResponse,
-  VerifyEmailRequest,
-  VerifyEmailResponse,
   GetAdminResponse,
   UpdateAdminResponse
 } from '~/types/admin.type'
@@ -20,23 +18,6 @@ const createNew = async (
 
     res.status(StatusCodes.CREATED).json({
       message: 'Admin created successfully',
-      data: result
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
-const verifyEmail = async (
-  req: Request<{}, {}, VerifyEmailRequest, {}>,
-  res: Response<VerifyEmailResponse>,
-  next: NextFunction
-) => {
-  try {
-    const result = await adminService.verifyEmail(req)
-
-    res.status(StatusCodes.OK).json({
-      message: 'Email verified successfully',
       data: result
     })
   } catch (error) {
@@ -126,7 +107,6 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 
 export const adminController = {
   createNew,
-  verifyEmail,
   update,
   updateUser,
   deleteUser,

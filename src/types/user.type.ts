@@ -33,16 +33,6 @@ export interface CreateUserResponse {
   data: Partial<IUser>
 }
 
-export interface VerifyEmailRequest {
-  email: string
-  token: string
-}
-
-export interface VerifyEmailResponse {
-  message: string
-  data: Partial<IUser>
-}
-
 export interface LoginRequest {
   email: string
   password: string

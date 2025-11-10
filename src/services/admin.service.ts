@@ -51,7 +51,7 @@ const createNew = async (req: any) => {
     }
 
     // Send a welcome email to the new admin
-    const verificationLink = `${WEBSITE_DOMAIN}/admin/account/verification?email=${getNewAdmin.email}&token=${getNewAdmin.verifyToken}`
+    const verificationLink = `${WEBSITE_DOMAIN}/user/account/verification?email=${getNewAdmin.email}&token=${getNewAdmin.verifyToken}`
     const customSubject =
       'Welcome to FitTrack Admin — Please Verify Your Email Address'
 
@@ -89,42 +89,6 @@ const createNew = async (req: any) => {
     await BrevoProvider.sendEmail(getNewAdmin.email, customSubject, htmlContent)
 
     return pickAdmin(getNewAdmin)
-  } catch (error) {
-    throw error
-  }
-}
-
-const verifyEmail = async (req: any) => {
-  try {
-    const { email, token } = req.body
-
-    const admin = await adminModel.findOneByEmail(email)
-
-    if (!admin) {
-      throw new ApiError(StatusCodes.NOT_FOUND, 'Admin not found')
-    }
-    if (admin.isActive) {
-      throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Admin already verified')
-    }
-    if (admin.verifyToken !== token) {
-      throw new ApiError(StatusCodes.FORBIDDEN, 'Invalid verification token')
-    }
-
-    const updateAdmin = {
-      isActive: true,
-      verifyToken: ''
-    }
-    if (!admin._id) {
-      throw new ApiError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        'Admin ID is missing'
-      )
-    }
-
-    // Update admin status to active
-    await adminModel.update(admin._id.toString(), updateAdmin)
-
-    return pickAdmin(admin)
   } catch (error) {
     throw error
   }
@@ -258,7 +222,6 @@ const updateUser = async (req: any) => {
 
 export const adminService = {
   createNew,
-  verifyEmail,
   update,
   getAllUsers,
   updateUser,

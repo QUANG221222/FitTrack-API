@@ -5,6 +5,8 @@ import { authValidation } from '~/validations/auth.validation'
 
 const Router = express.Router()
 
+Router.post('/verify', authValidation.verifyEmail, authController.verifyEmail)
+
 Router.post('/login', authValidation.login, authController.login)
 
 Router.post('/logout', authController.logout)

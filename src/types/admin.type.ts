@@ -25,16 +25,6 @@ export interface CreateAdminResponse {
   data: Partial<IAdmin>
 }
 
-export interface VerifyEmailRequest {
-  email: string
-  token: string
-}
-
-export interface VerifyEmailResponse {
-  message: string
-  data: Partial<IAdmin>
-}
-
 export interface AdminLoginRequest {
   email: string
   password: string

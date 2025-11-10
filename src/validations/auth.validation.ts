@@ -9,6 +9,27 @@ import { StatusCodes } from 'http-status-codes'
 import Joi from 'joi'
 import ApiError from '~/utils/ApiError'
 
+// Validate admin email verification request
+const verifyEmail = async (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
+  const correctCondition = Joi.object({
+    email: Joi.string()
+      .pattern(EMAIL_RULE)
+      .message(EMAIL_RULE_MESSAGE)
+      .required(),
+    token: Joi.string().required()
+  })
+  try {
+    await correctCondition.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error: any) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
+  }
+}
+
 // Validate admin login request
 const login = async (req: Request, _res: Response, next: NextFunction) => {
   const correctCondition = Joi.object({
@@ -30,5 +51,6 @@ const login = async (req: Request, _res: Response, next: NextFunction) => {
 }
 
 export const authValidation = {
-  login
+  login,
+  verifyEmail
 }

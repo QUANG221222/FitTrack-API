@@ -5,11 +5,30 @@ import {
   RefreshTokenRequest,
   RefreshTokenResponse,
   LoginRequest,
-  LoginResponse
+  LoginResponse,
+  VerifyEmailRequest,
+  VerifyEmailResponse
 } from '~/types/auth.type'
 import { authService } from '~/services/auth.service'
 import { env } from '~/configs/environment'
 import ms from 'ms'
+
+const verifyEmail = async (
+  req: Request<{}, {}, VerifyEmailRequest, {}>,
+  res: Response<VerifyEmailResponse>,
+  next: NextFunction
+) => {
+  try {
+    const result = await authService.verifyEmail(req)
+
+    res.status(StatusCodes.OK).json({
+      message: 'Email verified successfully',
+      data: result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
 
 const login = async (
   req: Request<{}, {}, LoginRequest, {}>,
@@ -92,5 +111,6 @@ const logout = async (_req: Request, res: Response, next: NextFunction) => {
 export const authController = {
   refreshToken,
   logout,
-  login
+  login,
+  verifyEmail
 }

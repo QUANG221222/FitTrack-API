@@ -16,3 +16,13 @@ export interface LoginResponse {
   message: string
   data: any
 }
+
+export interface VerifyEmailResponse {
+  message: string
+  data: any
+}
+
+export interface VerifyEmailRequest {
+  email: string
+  token: string
+}
