@@ -8,11 +8,6 @@ const Router = express.Router()
 
 Router.post('/register', userValidation.createNew, userController.createNew)
 
-Router.route('/verify').post(
-  userValidation.verifyEmail,
-  userController.verifyEmail
-)
-
 Router.get(
   '/profile',
   authHandlingMiddleware.isAuthorized,

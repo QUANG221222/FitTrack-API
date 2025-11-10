@@ -97,7 +97,56 @@ const login = async (req: any) => {
   }
 }
 
+const verifyEmail = async (req: any) => {
+  try {
+    const { email, token } = req.body
+
+    let existingUser: any = null
+
+    const adminAccount = await adminModel.findOneByEmail(email)
+    const userAccount = await userModel.findOneByEmail(email)
+
+    if (!adminAccount && !userAccount) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+    } else if (adminAccount) {
+      existingUser = adminAccount
+    } else if (userAccount) {
+      existingUser = userAccount
+    }
+
+    if (existingUser.isActive) {
+      throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'User already verified')
+    }
+    if (existingUser.verifyToken !== token) {
+      throw new ApiError(StatusCodes.FORBIDDEN, 'Invalid verification token')
+    }
+
+    const updateUser = {
+      isActive: true,
+      verifyToken: ''
+    }
+    if (!existingUser._id) {
+      throw new ApiError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        'User ID is missing'
+      )
+    }
+
+    // Update user status to active
+    if (existingUser.role === 'admin') {
+      await adminModel.update(existingUser._id.toString(), updateUser)
+    } else {
+      await userModel.update(existingUser._id.toString(), updateUser)
+    }
+
+    return pickUser(existingUser)
+  } catch (error) {
+    throw error
+  }
+}
+
 export const authService = {
   refreshToken,
-  login
+  login,
+  verifyEmail
 }

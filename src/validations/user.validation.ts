@@ -29,28 +29,6 @@ const createNew = async (req: Request, _res: Response, next: NextFunction) => {
   }
 }
 
-// Validate email verification request
-const verifyEmail = async (
-  req: Request,
-  _res: Response,
-  next: NextFunction
-) => {
-  const correctCondition = Joi.object({
-    email: Joi.string()
-      .required()
-      .pattern(EMAIL_RULE)
-      .message(EMAIL_RULE_MESSAGE),
-
-    token: Joi.string().required()
-  })
-  try {
-    await correctCondition.validateAsync(req.body, { abortEarly: false })
-    next()
-  } catch (error: any) {
-    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
-  }
-}
-
 // Validate user update request
 const update = async (req: Request, _res: Response, next: NextFunction) => {
   const correctCondition = Joi.object({
@@ -81,6 +59,5 @@ const update = async (req: Request, _res: Response, next: NextFunction) => {
 
 export const userValidation = {
   createNew,
-  verifyEmail,
   update
 }
