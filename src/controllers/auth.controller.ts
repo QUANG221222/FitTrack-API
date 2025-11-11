@@ -38,6 +38,15 @@ const login = async (
   try {
     const result = await authService.login(req)
 
+    res.cookie('userRole', result.role, {
+      httpOnly: false,
+      secure: env.BUILD_MODE === 'production',
+      sameSite: (env.BUILD_MODE === 'production' ? 'none' : 'lax') as
+        | 'none'
+        | 'lax',
+      maxAge: ms('14 days')
+    })
+
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
       secure: env.BUILD_MODE === 'production',
