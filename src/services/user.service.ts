@@ -92,7 +92,7 @@ const getProfile = async (req: Request): Promise<any> => {
 const update = async (req: Request): Promise<any> => {
   try {
     // Get user ID from JWT token
-    const userId = req.jwtDecoded._id
+    const userId = req.jwtDecoded.id
 
     // Find user
     const user = await userModel.findOneById(userId)

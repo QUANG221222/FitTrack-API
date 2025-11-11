@@ -123,7 +123,7 @@ const getOneById = async (id: string): Promise<any> => {
 const update = async (req: Request): Promise<any> => {
   try {
     const { id } = req.params
-    const adminId = req.jwtDecoded.id || req.jwtDecoded._id
+    const adminId = req.jwtDecoded.id
 
     // Find exercise
     const exercise = await exerciseModel.findOneById(id)
@@ -212,7 +212,7 @@ const update = async (req: Request): Promise<any> => {
 const deleteOne = async (req: Request): Promise<any> => {
   try {
     const { id } = req.params
-    const adminId = req.jwtDecoded.id || req.jwtDecoded._id
+    const adminId = req.jwtDecoded.id
 
     // Find exercise to get image info and check ownership
     const exercise = await exerciseModel.findOneById(id)
@@ -257,7 +257,7 @@ const deleteOne = async (req: Request): Promise<any> => {
 const uploadVideo = async (req: Request): Promise<any> => {
   try {
     const { id } = req.params
-    const adminId = req.jwtDecoded.id || req.jwtDecoded._id
+    const adminId = req.jwtDecoded.id
 
     // Find exercise
     const exercise = await exerciseModel.findOneById(id)
