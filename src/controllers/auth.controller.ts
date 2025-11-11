@@ -110,6 +110,7 @@ const logout = async (_req: Request, res: Response, next: NextFunction) => {
     // Clear cookies - accessToken & refreshToken
     res.clearCookie('accessToken')
     res.clearCookie('refreshToken')
+    res.clearCookie('userRole')
 
     res.status(StatusCodes.OK).json({ message: 'Logout successful' })
   } catch (error: any) {

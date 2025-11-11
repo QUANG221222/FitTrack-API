@@ -10,6 +10,12 @@ import { errorHandlingMiddleware } from '~/middlewares/errorHandling.middleware'
 const START_SERVER = () => {
   const app = express()
 
+  // Fix Cache from disk of Express
+  app.use((_req, res, next) => {
+    res.set('Cache-Control', 'no-store')
+    next()
+  })
+
   // Config Cookie Parser
   app.use(cookieParser())
 

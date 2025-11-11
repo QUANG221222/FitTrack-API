@@ -79,12 +79,14 @@ const login = async (req: any) => {
       userInfo,
       env.ACCESS_TOKEN_SECRET_SIGNATURE as string,
       env.ACCESS_TOKEN_LIFE as string
+      // 5 // 5 seconds for testing access token refresh
     )
 
     const refreshToken = await JwtProvider.generateToken(
       userInfo,
       env.REFRESH_TOKEN_SECRET_SIGNATURE as string,
       env.REFRESH_TOKEN_LIFE as string
+      // 15 // 15 seconds for testing refresh token refresh
     )
 
     return {
