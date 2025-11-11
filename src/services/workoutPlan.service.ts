@@ -105,7 +105,7 @@ const getAll = async (req: Request): Promise<any> => {
 const getOneById = async (req: Request): Promise<any> => {
   try {
     const { id } = req.params
-    const userId = req.jwtDecoded._id || req.jwtDecoded.id
+    const userId = req.jwtDecoded.id
 
     const workoutPlan = await workoutPlanModel.findOneById(id)
 
