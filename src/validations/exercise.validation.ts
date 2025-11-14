@@ -74,11 +74,11 @@ const update = async (req: Request, _res: Response, next: NextFunction) => {
       'string.max': 'Description must be at most 1000 characters long'
     }),
     type: Joi.string()
-      .valid('strength', 'cardio', 'mobility', 'flexibility')
+      .valid('strength', 'cardio', 'mobility', 'flexibility', 'calisthenics')
       .optional()
       .messages({
         'any.only':
-          'Type must be one of: strength, cardio, mobility, flexibility'
+          'Type must be one of: strength, cardio, mobility, flexibility, calisthenics'
       }),
     difficulty: Joi.string()
       .valid('beginner', 'intermediate', 'advance')
