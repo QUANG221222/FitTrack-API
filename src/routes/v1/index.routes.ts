@@ -10,6 +10,7 @@ import { metricEntryRoutes } from './metricEntry.routes'
 import { goalRoutes } from './goal.routes'
 import { progressPhotoRoutes } from './progressPhoto.routes'
 import { blogRoutes } from './blog.routes'
+import { dashboardRouter } from './dashboard.routes'
 
 const Router = express.Router()
 
@@ -34,5 +35,7 @@ Router.use('/goals', goalRoutes)
 Router.use('/progress-photos', progressPhotoRoutes)
 
 Router.use('/blogs', blogRoutes)
+
+Router.use('/dashboard', dashboardRouter)
 
 export const APIs_V1: express.Router = Router
