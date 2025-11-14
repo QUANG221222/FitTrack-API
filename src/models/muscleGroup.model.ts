@@ -118,11 +118,21 @@ const deleteOne = async (id: string): Promise<boolean> => {
   }
 }
 
+const countMuscleGroups = async (): Promise<number> => {
+  try {
+    const total = await GET_DB().collection(COLLECTION_NAME).countDocuments()
+    return total
+  } catch (error) {
+    throw new Error(error as any)
+  }
+}
+
 export const muscleGroupModel = {
   createNew,
   findOneByName,
   findOneById,
   findAll,
   update,
-  deleteOne
+  deleteOne,
+  countMuscleGroups
 }

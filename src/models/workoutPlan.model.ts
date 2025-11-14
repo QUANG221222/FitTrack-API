@@ -206,11 +206,21 @@ const deleteOne = async (id: string): Promise<boolean> => {
   }
 }
 
+const countWorkoutPlans = async (): Promise<number> => {
+  try {
+    const total = await GET_DB().collection(COLLECTION_NAME).countDocuments()
+    return total
+  } catch (error) {
+    throw new Error(error as any)
+  }
+}
+
 export const workoutPlanModel = {
   createNew,
   findOneById,
   findAll,
   update,
   deleteOne,
-  findOneByName
+  findOneByName,
+  countWorkoutPlans
 }

@@ -113,11 +113,22 @@ const deleteUser = async (id: string): Promise<any> => {
   }
 }
 
+const countUsers = async (): Promise<number> => {
+  try {
+    const total = await GET_DB().collection(COLLECTION_NAME).countDocuments()
+
+    return total
+  } catch (error: any) {
+    throw new Error(error)
+  }
+}
+
 export const userModel = {
   findOneByEmail,
   createNew,
   findOneById,
   deleteUser,
   update,
-  findAllUsers
+  findAllUsers,
+  countUsers
 }
