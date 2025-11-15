@@ -2,6 +2,7 @@ import express from 'express'
 import { blogController } from '~/controllers/blog.controller'
 import { blogValidation } from '~/validations/blog.validation'
 import { authHandlingMiddleware } from '~/middlewares/authHandling.middleware'
+import { CloudinaryProvider } from '~/providers/CloudinaryProvider'
 
 const Router = express.Router()
 
@@ -15,6 +16,7 @@ Router.post(
   '/',
   authHandlingMiddleware.isAuthorized,
   authHandlingMiddleware.isAdmin,
+  CloudinaryProvider.uploadBlogThumbnail.single('image'),
   blogValidation.createNew,
   blogController.createNew
 )
@@ -23,6 +25,7 @@ Router.put(
   '/:id',
   authHandlingMiddleware.isAuthorized,
   authHandlingMiddleware.isAdmin,
+  CloudinaryProvider.uploadBlogThumbnail.single('image'),
   blogValidation.update,
   blogController.update
 )
@@ -34,5 +37,9 @@ Router.delete(
   blogValidation.validateId,
   blogController.deleteOne
 )
+
+Router.put('/:id/like', blogValidation.validateId, blogController.likeBlog)
+
+Router.put('/:id/view', blogValidation.validateId, blogController.viewBlog)
 
 export const blogRoutes: express.Router = Router

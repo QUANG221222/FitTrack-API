@@ -1,12 +1,16 @@
 import { Request } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { blogModel } from '~/models/blog.model'
+import { CloudinaryProvider } from '~/providers/CloudinaryProvider'
 import ApiError from '~/utils/ApiError'
 import { pickBlog } from '~/utils/fomatter'
 
 const createNew = async (req: Request): Promise<any> => {
   try {
-    const { name, description, content } = req.body
+    const { name, description, content, type } = req.body
+
+    // Get adminId from JWT token
+    const adminId = req.jwtDecoded.id
 
     // Check if blog already exists
     const existingBlog = await blogModel.findOneByName(name)
@@ -19,9 +23,17 @@ const createNew = async (req: Request): Promise<any> => {
 
     // Prepare blog data
     const blogData: any = {
+      adminId,
       name,
       description: description || '',
-      content: content || ''
+      content: content || '',
+      type: type
+    }
+
+    // Handle image upload if file is provided
+    if (req.file) {
+      blogData.thumbnailUrl = req.file.path
+      blogData.thumbnailPublicId = req.file.filename
     }
 
     const createdBlog = await blogModel.createNew(blogData)
@@ -62,11 +74,20 @@ const getOneById = async (id: string): Promise<any> => {
 const update = async (req: Request): Promise<any> => {
   try {
     const { id } = req.params
+    const adminId = req.jwtDecoded.id
 
     // Find blog
     const blog = await blogModel.findOneById(id)
     if (!blog) {
       throw new ApiError(StatusCodes.NOT_FOUND, 'Blog not found')
+    }
+
+    // Check if the adminId matches
+    if (blog.adminId.toString() !== adminId) {
+      throw new ApiError(
+        StatusCodes.FORBIDDEN,
+        'You do not have permission to update this blog'
+      )
     }
 
     // Check if name is being updated and if it conflicts with existing
@@ -78,6 +99,17 @@ const update = async (req: Request): Promise<any> => {
           'Blog with this name already exists'
         )
       }
+    }
+
+    // Handle image upload if file is provided
+    if (req.file) {
+      // Delete old image from Cloudinary if exists
+      if (blog.thumbnailPublicId) {
+        await CloudinaryProvider.deleteImage(blog.thumbnailPublicId)
+      }
+
+      req.body.thumbnailUrl = req.file.path
+      req.body.thumbnailPublicId = req.file.filename
     }
 
     // Prepare update data
@@ -110,6 +142,11 @@ const deleteOne = async (id: string): Promise<any> => {
       throw new ApiError(StatusCodes.NOT_FOUND, 'Blog not found')
     }
 
+    // Delete image from Cloudinary if exists
+    if (blog.thumbnailPublicId) {
+      await CloudinaryProvider.deleteImage(blog.thumbnailPublicId)
+    }
+
     // Delete blog from database
     const deleted = await blogModel.deleteOne(id)
 
@@ -126,10 +163,46 @@ const deleteOne = async (id: string): Promise<any> => {
   }
 }
 
+const likeBlog = async (id: string): Promise<any> => {
+  try {
+    // Find blog
+    const blog = await blogModel.findOneById(id)
+    if (!blog) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Blog not found')
+    }
+    // Increment likes
+    const updatedBlog = await blogModel.update(id, {
+      likes: (blog.likes || 0) + 1
+    })
+    return pickBlog(updatedBlog)
+  } catch (error) {
+    throw error
+  }
+}
+
+const viewBlog = async (id: string): Promise<any> => {
+  try {
+    // Find blog
+    const blog = await blogModel.findOneById(id)
+    if (!blog) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Blog not found')
+    }
+    // Increment views
+    const updatedBlog = await blogModel.update(id, {
+      views: (blog.views || 0) + 1
+    })
+    return pickBlog(updatedBlog)
+  } catch (error) {
+    throw error
+  }
+}
+
 export const blogService = {
   createNew,
   getAll,
   getOneById,
   update,
-  deleteOne
+  deleteOne,
+  likeBlog,
+  viewBlog
 }

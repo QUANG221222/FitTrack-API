@@ -12,6 +12,14 @@ const createNew = async (req: Request, _res: Response, next: NextFunction) => {
       'string.max': 'Name must be at most 200 characters long',
       'any.required': 'Name is required'
     }),
+    type: Joi.string()
+      .valid('general', 'nutrition', 'workout', 'lifestyle', 'other')
+      .required()
+      .messages({
+        'any.only':
+          'Type must be one of general, nutrition, workout, lifestyle, or other',
+        'any.required': 'Type is required'
+      }),
     description: Joi.string().max(1000).optional().allow('').messages({
       'string.max': 'Description must be at most 1000 characters long'
     }),
@@ -38,6 +46,13 @@ const update = async (req: Request, _res: Response, next: NextFunction) => {
     description: Joi.string().max(1000).optional().allow('').messages({
       'string.max': 'Description must be at most 1000 characters long'
     }),
+    type: Joi.string()
+      .valid('general', 'nutrition', 'workout', 'lifestyle', 'other')
+      .optional()
+      .messages({
+        'any.only':
+          'Type must be one of general, nutrition, workout, lifestyle, or other'
+      }),
     content: Joi.string().optional().allow('').messages({
       'string.base': 'Content must be a string'
     })

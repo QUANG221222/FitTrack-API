@@ -149,9 +149,15 @@ export const pickProgressPhoto = (progressPhoto: any): any => {
 export const pickBlog = (blog: any): any => {
   return pick(blog, [
     '_id',
+    'adminId',
     'name',
     'description',
     'content',
+    'type',
+    'thumbnailUrl',
+    'thumbnailPublicId',
+    'likes',
+    'views',
     'createdAt',
     'updatedAt'
   ])

@@ -95,10 +95,46 @@ const deleteOne = async (
   }
 }
 
+const likeBlog = async (
+  req: Request<{ id: string }, {}, {}, {}>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await blogService.likeBlog(req.params.id)
+
+    res.status(StatusCodes.OK).json({
+      message: 'Blog liked successfully',
+      data: result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+const viewBlog = async (
+  req: Request<{ id: string }, {}, {}, {}>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await blogService.viewBlog(req.params.id)
+
+    res.status(StatusCodes.OK).json({
+      message: 'Blog viewed successfully',
+      data: result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const blogController = {
   createNew,
   getAll,
   getOneById,
   update,
-  deleteOne
+  deleteOne,
+  likeBlog,
+  viewBlog
 }
