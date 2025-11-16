@@ -21,7 +21,7 @@ export interface IGoal {
   startDate?: Date
   targetDate?: Date
   status: GoalStatus
-  note?: string
+  note?: string 
   metricCode?: string
   exerciseId?: ObjectId
   createdAt: Date

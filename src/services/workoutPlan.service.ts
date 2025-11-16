@@ -59,6 +59,12 @@ const createNew = async (req: Request): Promise<any> => {
       }
     }
 
+    // If new plan is active, deactivate all other plans for this user
+    const shouldBeActive = isActive !== undefined ? isActive : true
+    if (shouldBeActive) {
+      await workoutPlanModel.deactivateAllForUser(userId)
+    }
+
     // Prepare workout plan data
     const workoutPlanData: any = {
       userId,
@@ -66,7 +72,7 @@ const createNew = async (req: Request): Promise<any> => {
       goalHint: goalHint || '',
       startDate: startDate ? new Date(startDate) : null,
       endDate: endDate ? new Date(endDate) : null,
-      isActive: isActive !== undefined ? isActive : true,
+      isActive: shouldBeActive,
       days: days || []
     }
 
@@ -190,6 +196,13 @@ const update = async (req: Request): Promise<any> => {
     const updateData = {
       ...req.body,
       updatedAt: Date.now()
+    }
+
+    // If updating to active, deactivate all other plans for this user FIRST
+    if (req.body.isActive === true) {
+      await workoutPlanModel.deactivateAllForUser(userId, id)
+      // Ensure this plan is set to active
+      updateData.isActive = true
     }
 
     // Update workout plan in database

@@ -206,11 +206,42 @@ const deleteOne = async (id: string): Promise<boolean> => {
   }
 }
 
+const deactivateAllForUser = async (
+  userId: string,
+  exceptId?: string
+): Promise<any> => {
+  try {
+    const query: any = {
+      userId: new ObjectId(userId),
+      isActive: true
+    }
+
+    // Exclude the plan being updated (if provided)
+    if (exceptId) {
+      query._id = { $ne: new ObjectId(exceptId) }
+    }
+
+    const result = await GET_DB()
+      .collection(COLLECTION_NAME)
+      .updateMany(query, {
+        $set: {
+          isActive: false,
+          updatedAt: Date.now()
+        }
+      })
+
+    return result
+  } catch (error) {
+    throw error
+  }
+}
+
 export const workoutPlanModel = {
   createNew,
   findOneById,
   findAll,
   update,
   deleteOne,
-  findOneByName
+  findOneByName,
+  deactivateAllForUser
 }
