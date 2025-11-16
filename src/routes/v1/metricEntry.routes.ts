@@ -20,6 +20,29 @@ Router.get(
   metricEntryController.getAll
 )
 
+// ⚠️ IMPORTANT: Specific routes MUST come BEFORE dynamic routes (/:id)
+Router.get(
+  '/latest/:metricCode',
+  authHandlingMiddleware.isAuthorized,
+  metricEntryValidation.validateMetricCode,
+  metricEntryController.getLatestByCode
+)
+
+Router.get(
+  '/history/:metricCode',
+  authHandlingMiddleware.isAuthorized,
+  metricEntryValidation.validateMetricCode,
+  metricEntryController.getHistoryByCode
+)
+
+Router.get(
+  '/stats/:metricCode',
+  authHandlingMiddleware.isAuthorized,
+  metricEntryValidation.validateMetricCode,
+  metricEntryController.getStatsByCode
+)
+
+// Dynamic routes come AFTER specific routes
 Router.get(
   '/:id',
   authHandlingMiddleware.isAuthorized,

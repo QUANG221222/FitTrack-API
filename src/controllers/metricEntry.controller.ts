@@ -95,10 +95,52 @@ const deleteOne = async (
   }
 }
 
+const getLatestByCode = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await metricEntryService.getLatestByCode(req)
+    res.status(StatusCodes.OK).json(result)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const getHistoryByCode = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await metricEntryService.getHistoryByCode(req)
+    res.status(StatusCodes.OK).json(result)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const getStatsByCode = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await metricEntryService.getStatsByCode(req)
+    res.status(StatusCodes.OK).json(result)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const metricEntryController = {
   createNew,
   getAll,
   getOneById,
   update,
-  deleteOne
+  deleteOne,
+  getLatestByCode,
+  getHistoryByCode,
+  getStatsByCode
 }

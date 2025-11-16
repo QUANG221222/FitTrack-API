@@ -151,10 +151,95 @@ const deleteOne = async (id: string): Promise<boolean> => {
   }
 }
 
+const findLatestByCode = async (
+  userId: string,
+  metricCode: string
+): Promise<any> => {
+  try {
+    const result = await GET_DB()
+      .collection(COLLECTION_NAME)
+      .findOne(
+        { userId: new ObjectId(userId), metricCode },
+        { sort: { measureAt: -1 } }
+      )
+    return result
+  } catch (error) {
+    throw error
+  }
+}
+
+const findHistoryByCode = async (
+  userId: string,
+  metricCode: string,
+  filters: any
+): Promise<any[]> => {
+  try {
+    const query: any = {
+      userId: new ObjectId(userId),
+      metricCode
+    }
+
+    if (filters.startDate || filters.endDate) {
+      query.measureAt = {}
+      if (filters.startDate)
+        query.measureAt.$gte = new Date(filters.startDate as string)
+      if (filters.endDate)
+        query.measureAt.$lte = new Date(filters.endDate as string)
+    }
+
+    const limit = filters.limit ? parseInt(filters.limit as string) : 100
+
+    const result = await GET_DB()
+      .collection(COLLECTION_NAME)
+      .find(query)
+      .sort({ measureAt: 1 })
+      .limit(limit)
+      .toArray()
+
+    return result
+  } catch (error) {
+    throw error
+  }
+}
+
+const getStatsByCode = async (
+  userId: string,
+  metricCode: string,
+  filters: any
+): Promise<any[]> => {
+  try {
+    const match: any = {
+      userId: new ObjectId(userId),
+      metricCode
+    }
+
+    if (filters.startDate || filters.endDate) {
+      match.measureAt = {}
+      if (filters.startDate)
+        match.measureAt.$gte = new Date(filters.startDate as string)
+      if (filters.endDate)
+        match.measureAt.$lte = new Date(filters.endDate as string)
+    }
+
+    const result = await GET_DB()
+      .collection(COLLECTION_NAME)
+      .find(match)
+      .sort({ measureAt: 1 })
+      .toArray()
+
+    return result
+  } catch (error) {
+    throw error
+  }
+}
+
 export const metricEntryModel = {
   createNew,
   findOneById,
   findAll,
   update,
-  deleteOne
+  deleteOne,
+  findLatestByCode,
+  findHistoryByCode,
+  getStatsByCode
 }
