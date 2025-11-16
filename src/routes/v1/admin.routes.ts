@@ -48,4 +48,12 @@ Router.put(
   adminController.updateUser
 )
 
+Router.patch(
+  '/users/:id/toggle-status',
+  authHandlingMiddleware.isAuthorized,
+  authHandlingMiddleware.isAdmin,
+  adminValidation.validateId,
+  adminController.toggleUserStatus
+)
+
 export const adminRoutes: express.Router = Router

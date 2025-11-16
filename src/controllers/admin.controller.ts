@@ -105,11 +105,29 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const toggleUserStatus = async (
+  req: Request<{ id: string }, {}, {}, {}>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await adminService.toggleUserStatus(req)
+
+    res.status(StatusCodes.OK).json({
+      message: 'User status toggled successfully',
+      data: result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const adminController = {
   createNew,
   update,
   updateUser,
   deleteUser,
   getAllUsers,
-  getProfile
+  getProfile,
+  toggleUserStatus
 }

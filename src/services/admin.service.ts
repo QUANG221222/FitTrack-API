@@ -220,11 +220,30 @@ const updateUser = async (req: any) => {
   }
 }
 
+const toggleUserStatus = async (req: any) => {
+  try {
+    const { id } = req.params
+    const user = await userModel.findOneById(id)
+    if (!user) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+    }
+    const updatedData = {
+      isActive: !user.isActive,
+      updatedAt: Date.now()
+    }
+    const result = await userModel.update(id, updatedData)
+    return pickUser(result)
+  } catch (error) {
+    throw error
+  }
+}
+
 export const adminService = {
   createNew,
   update,
   getAllUsers,
   updateUser,
   deleteUser,
-  getProfile
+  getProfile,
+  toggleUserStatus
 }

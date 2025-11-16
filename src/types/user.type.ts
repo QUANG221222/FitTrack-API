@@ -14,8 +14,8 @@ export interface IUser {
   weightKg?: number
   avatar?: string
   avatarPublicId?: string
-  createdAt: Date
-  updatedAt: Date | null
+  createdAt: Date | number
+  updatedAt: Date | number | null
 }
 
 export interface GetUserResponse {
