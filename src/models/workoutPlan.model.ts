@@ -233,6 +233,12 @@ const deactivateAllForUser = async (
     return result
   } catch (error) {
     throw error
+const countWorkoutPlans = async (): Promise<number> => {
+  try {
+    const total = await GET_DB().collection(COLLECTION_NAME).countDocuments()
+    return total
+  } catch (error) {
+    throw new Error(error as any)
   }
 }
 
@@ -244,4 +250,5 @@ export const workoutPlanModel = {
   deleteOne,
   findOneByName,
   deactivateAllForUser
+  countWorkoutPlans
 }

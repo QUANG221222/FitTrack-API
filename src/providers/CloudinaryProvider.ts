@@ -79,6 +79,7 @@ const uploadAdmin = createUpload('admin')
 const uploadExercise = createUpload('exercise')
 const uploadExerciseVideo = createUpload('exercise-videos', true)
 const uploadMuscleGroup = createUpload('muscle-groups')
+const uploadBlogThumbnail = createUpload('blog-thumbnails')
 
 const deleteMedia = async (
   publicId: string,
@@ -107,6 +108,7 @@ export const CloudinaryProvider = {
   uploadExerciseVideo,
   uploadMuscleGroup,
   uploadProgressPhoto,
+  uploadBlogThumbnail,
   deleteImage,
   deleteVideo,
   deleteMedia
