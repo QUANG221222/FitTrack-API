@@ -106,6 +106,10 @@ const update = async (req: Request): Promise<any> => {
       if (user.avatarPublicId) {
         await CloudinaryProvider.deleteImage(user.avatarPublicId)
       }
+
+      // ✅ Save both avatar URL and public_id from Cloudinary
+      req.body.avatar = req.file.path
+      req.body.avatarPublicId = (req.file as any).filename // Cloudinary public_id
     }
 
     // Prepare update data

@@ -166,10 +166,130 @@ const deleteOne = async (req: Request): Promise<any> => {
   }
 }
 
+const getLatestByCode = async (req: Request): Promise<any> => {
+  try {
+    const { metricCode } = req.params
+    const userId = req.jwtDecoded.id
+
+    const latestEntry = await metricEntryModel.findLatestByCode(
+      userId,
+      metricCode
+    )
+
+    if (!latestEntry) {
+      return {
+        message: 'No metric entries found for this code',
+        data: null
+      }
+    }
+
+    return {
+      message: 'Latest metric retrieved successfully',
+      data: pickMetricEntry(latestEntry)
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+const getHistoryByCode = async (req: Request): Promise<any> => {
+  try {
+    const { metricCode } = req.params
+    const { startDate, endDate, limit } = req.query
+    const userId = req.jwtDecoded.id
+
+    const filters: any = {}
+    if (startDate) filters.startDate = startDate
+    if (endDate) filters.endDate = endDate
+    if (limit) filters.limit = limit
+
+    const history = await metricEntryModel.findHistoryByCode(
+      userId,
+      metricCode,
+      filters
+    )
+
+    return {
+      message: 'Metric history retrieved successfully',
+      data: history.map((entry) => pickMetricEntry(entry))
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+const getStatsByCode = async (req: Request): Promise<any> => {
+  try {
+    const { metricCode } = req.params
+    const { startDate, endDate, groupBy } = req.query
+    const userId = req.jwtDecoded.id
+
+    const filters: any = {}
+    if (startDate) filters.startDate = startDate
+    if (endDate) filters.endDate = endDate
+
+    const entries = await metricEntryModel.getStatsByCode(
+      userId,
+      metricCode,
+      filters
+    )
+
+    if (entries.length === 0) {
+      return {
+        message: 'No data available for statistics',
+        data: null
+      }
+    }
+
+    // Calculate statistics
+    const values = entries.map((entry) => entry.value)
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+    const avg = values.reduce((sum, val) => sum + val, 0) / values.length
+    const count = entries.length
+
+    // Calculate trend
+    const firstValue = entries[0].value
+    const lastValue = entries[entries.length - 1].value
+    const changePercent = ((lastValue - firstValue) / firstValue) * 100
+
+    let trend: 'up' | 'down' | 'stable' = 'stable'
+    if (Math.abs(changePercent) < 1) {
+      trend = 'stable'
+    } else if (changePercent > 0) {
+      trend = 'up'
+    } else {
+      trend = 'down'
+    }
+
+    return {
+      message: 'Metric stats retrieved successfully',
+      data: {
+        metricCode,
+        period: {
+          startDate: startDate || entries[0].measureAt,
+          endDate: endDate || entries[entries.length - 1].measureAt
+        },
+        min: parseFloat(min.toFixed(2)),
+        max: parseFloat(max.toFixed(2)),
+        avg: parseFloat(avg.toFixed(2)),
+        count,
+        trend,
+        changePercent: parseFloat(changePercent.toFixed(2))
+      }
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 export const metricEntryService = {
   createNew,
   getAll,
   getOneById,
   update,
-  deleteOne
+  deleteOne,
+  getLatestByCode,
+  getHistoryByCode,
+  getStatsByCode
 }

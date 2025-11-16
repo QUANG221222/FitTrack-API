@@ -124,8 +124,32 @@ const validateId = async (req: Request, _res: Response, next: NextFunction) => {
   }
 }
 
+// Validate metric code in params
+const validateMetricCode = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const correctCondition = Joi.object({
+    metricCode: Joi.string().required().trim().strict()
+  })
+
+  try {
+    await correctCondition.validateAsync(req.params, { abortEarly: false })
+    next()
+  } catch (error) {
+    next(
+      new ApiError(
+        StatusCodes.UNPROCESSABLE_ENTITY,
+        new Error(error as string).message
+      )
+    )
+  }
+}
+
 export const metricEntryValidation = {
   createNew,
   update,
-  validateId
+  validateId,
+  validateMetricCode
 }
