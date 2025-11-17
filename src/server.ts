@@ -10,6 +10,11 @@ import { errorHandlingMiddleware } from '~/middlewares/errorHandling.middleware'
 const START_SERVER = () => {
   const app = express()
 
+  // In production, trust the first proxy (e.g., when behind a load balancer)
+  if (env.BUILD_MODE === 'production') {
+    app.set('trust proxy', 1)
+  }
+
   // Fix Cache from disk of Express
   app.use((_req, res, next) => {
     res.set('Cache-Control', 'no-store')
