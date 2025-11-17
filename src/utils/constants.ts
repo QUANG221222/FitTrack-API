@@ -1,7 +1,7 @@
 import { env } from '~/configs/environment'
 
 export const WHITELIST_DOMAINS = [
-  'https://gym-workout-progress-tracker.vercel.app/'
+  'https://gym-workout-progress-tracker.vercel.app'
 ]
 
 export const WEBSITE_DOMAIN =
