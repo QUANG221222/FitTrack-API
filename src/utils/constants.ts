@@ -1,6 +1,8 @@
 import { env } from '~/configs/environment'
 
-export const WHITELIST_DOMAINS = ['']
+export const WHITELIST_DOMAINS = [
+  'https://gym-workout-progress-tracker.vercel.app/'
+]
 
 export const WEBSITE_DOMAIN =
   env.BUILD_MODE === 'production'
