@@ -44,6 +44,7 @@ const login = async (
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
       path: '/',
+      domain: isProduction ? process.env.COOKIE_DOMAIN : undefined,
       maxAge: ms('14 days')
     })
 
@@ -52,6 +53,7 @@ const login = async (
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
       path: '/',
+      domain: isProduction ? process.env.COOKIE_DOMAIN : undefined,
       maxAge: ms('14 days')
     })
 
@@ -60,6 +62,7 @@ const login = async (
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
       path: '/',
+      domain: isProduction ? process.env.COOKIE_DOMAIN : undefined,
       maxAge: ms('14 days')
     })
 
@@ -85,6 +88,7 @@ const refreshToken = async (
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
       path: '/',
+      domain: isProduction ? process.env.COOKIE_DOMAIN : undefined,
       maxAge: ms('14 days')
     })
 
