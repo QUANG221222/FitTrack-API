@@ -10,8 +10,9 @@ import {
   VerifyEmailResponse
 } from '~/types/auth.type'
 import { authService } from '~/services/auth.service'
-import { env } from '~/configs/environment'
 import ms from 'ms'
+
+const isProduction = process.env.BUILD_MODE === 'production'
 
 const verifyEmail = async (
   req: Request<{}, {}, VerifyEmailRequest, {}>,
@@ -37,7 +38,6 @@ const login = async (
 ) => {
   try {
     const result = await authService.login(req)
-    const isProduction = env.BUILD_MODE === 'production'
 
     res.cookie('userRole', result.role, {
       httpOnly: true,
@@ -79,7 +79,6 @@ const refreshToken = async (
 ): Promise<void> => {
   try {
     const result = await authService.refreshToken(req.cookies?.refreshToken)
-    const isProduction = env.BUILD_MODE === 'production'
 
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
