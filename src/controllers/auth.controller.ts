@@ -37,31 +37,29 @@ const login = async (
 ) => {
   try {
     const result = await authService.login(req)
+    const isProduction = env.BUILD_MODE === 'production'
 
     res.cookie('userRole', result.role, {
       httpOnly: true,
-      secure: env.BUILD_MODE === 'production',
-      sameSite: (env.BUILD_MODE === 'production' ? 'none' : 'lax') as
-        | 'none'
-        | 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
       maxAge: ms('14 days')
     })
 
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
-      secure: env.BUILD_MODE === 'production',
-      sameSite: (env.BUILD_MODE === 'production' ? 'none' : 'lax') as
-        | 'none'
-        | 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
       maxAge: ms('14 days')
     })
 
     res.cookie('refreshToken', result.refreshToken, {
       httpOnly: true,
-      secure: env.BUILD_MODE === 'production',
-      sameSite: (env.BUILD_MODE === 'production' ? 'none' : 'lax') as
-        | 'none'
-        | 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
       maxAge: ms('14 days')
     })
 
@@ -81,13 +79,13 @@ const refreshToken = async (
 ): Promise<void> => {
   try {
     const result = await authService.refreshToken(req.cookies?.refreshToken)
+    const isProduction = env.BUILD_MODE === 'production'
 
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
-      secure: env.BUILD_MODE === 'production',
-      sameSite: (env.BUILD_MODE === 'production' ? 'none' : 'lax') as
-        | 'none'
-        | 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
       maxAge: ms('14 days')
     })
 
