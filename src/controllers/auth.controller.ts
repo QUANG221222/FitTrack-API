@@ -10,9 +10,7 @@ import {
   VerifyEmailResponse
 } from '~/types/auth.type'
 import { authService } from '~/services/auth.service'
-import ms from 'ms'
-
-const isProduction = process.env.BUILD_MODE === 'production'
+import { cookieOptions } from '~/configs/cookieOption'
 
 const verifyEmail = async (
   req: Request<{}, {}, VerifyEmailRequest, {}>,
@@ -39,32 +37,11 @@ const login = async (
   try {
     const result = await authService.login(req)
 
-    res.cookie('userRole', result.role, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
-      path: '/',
-      domain: isProduction ? process.env.COOKIE_DOMAIN : undefined,
-      maxAge: ms('14 days')
-    })
+    res.cookie('userRole', result.role, cookieOptions)
 
-    res.cookie('accessToken', result.accessToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
-      path: '/',
-      domain: isProduction ? process.env.COOKIE_DOMAIN : undefined,
-      maxAge: ms('14 days')
-    })
+    res.cookie('accessToken', result.accessToken, cookieOptions)
 
-    res.cookie('refreshToken', result.refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
-      path: '/',
-      domain: isProduction ? process.env.COOKIE_DOMAIN : undefined,
-      maxAge: ms('14 days')
-    })
+    res.cookie('refreshToken', result.refreshToken, cookieOptions)
 
     res.status(StatusCodes.OK).json({
       message: 'Login successful',
@@ -83,14 +60,7 @@ const refreshToken = async (
   try {
     const result = await authService.refreshToken(req.cookies?.refreshToken)
 
-    res.cookie('accessToken', result.accessToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
-      path: '/',
-      domain: isProduction ? process.env.COOKIE_DOMAIN : undefined,
-      maxAge: ms('14 days')
-    })
+    res.cookie('accessToken', result.accessToken, cookieOptions)
 
     res.status(StatusCodes.OK).json({
       message: 'Token refreshed successfully',
@@ -109,9 +79,9 @@ const refreshToken = async (
 const logout = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     // Clear cookies - accessToken & refreshToken
-    res.clearCookie('accessToken')
-    res.clearCookie('refreshToken')
-    res.clearCookie('userRole')
+    res.clearCookie('accessToken', cookieOptions)
+    res.clearCookie('refreshToken', cookieOptions)
+    res.clearCookie('userRole', cookieOptions)
 
     res.status(StatusCodes.OK).json({ message: 'Logout successful' })
   } catch (error: any) {
