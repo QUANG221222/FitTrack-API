@@ -29,6 +29,13 @@ export const pickAdmin = (user: any): any => {
     'avatar',
     'avatarPublicId',
     'isActive',
+    'phoneNumber',
+    'bio',
+    'location',
+    'gender',
+    'dob',
+    'heightCm',
+    'weightKg',
     'createdAt',
     'updatedAt'
   ])

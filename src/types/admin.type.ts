@@ -5,6 +5,13 @@ export interface IAdmin {
   email: string
   password: string
   displayName: string
+  phoneNumber: string | null
+  bio: string | null
+  location: string | null
+  dob: Date | null
+  gender: string | null
+  heightCm: number | null
+  weightKg: number | null
   role: string
   isActive: boolean
   verifyToken?: string | null
@@ -41,6 +48,13 @@ export interface AdminLoginResponse {
 
 export interface UpdateAdminRequest {
   displayName?: string
+  phoneNumber?: string | null
+  bio?: string | null
+  location?: string | null
+  gender?: string | null
+  dob?: Date | null
+  heightCm?: number | null
+  weightKg?: number | null
   avatar?: string
   avatarPublicId?: string
   isActive?: boolean

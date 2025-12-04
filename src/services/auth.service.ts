@@ -147,8 +147,48 @@ const verifyEmail = async (req: any) => {
   }
 }
 
+const changePassword = async (req: any) => {
+  try {
+    const { oldPassword, newPassword } = req.body
+    const userId = req.jwtDecoded.id
+
+    let existingUser: any = null
+    const adminAccount = await adminModel.findOneById(userId)
+    const userAccount = await userModel.findOneById(userId)   
+    if (!adminAccount && !userAccount) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+    } else if (adminAccount) {
+      existingUser = adminAccount
+    } else if (userAccount) {
+      existingUser = userAccount
+    } 
+    if (!bcrypt.compareSync(oldPassword, existingUser.password)) {
+      throw new ApiError( 
+        StatusCodes.NOT_ACCEPTABLE,
+        'Your old password is incorrect!'
+      )
+    } 
+    const hashedNewPassword = bcrypt.hashSync(newPassword, 10)
+    const updateUser = {
+      password: hashedNewPassword
+    } 
+    if (existingUser.role === 'admin') {
+      await adminModel.update(existingUser._id.toString(), updateUser)
+    } else {  
+      await userModel.update(existingUser._id.toString(), updateUser)
+    }   
+    return pickUser(existingUser)
+  } catch (error) {
+    throw error
+  }
+}
+
+
+
+
 export const authService = {
   refreshToken,
   login,
-  verifyEmail
+  verifyEmail,
+  changePassword
 }

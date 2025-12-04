@@ -42,6 +42,21 @@ const update = async (req: Request, _res: Response, next: NextFunction) => {
   const correctCondition = Joi.object({
     displayName: Joi.string().max(100).optional().messages({
       'string.max': 'Display name must be at most 100 characters long'
+    }),
+    phoneNumber: Joi.string().optional().allow(null, ''),
+    bio: Joi.string().optional().allow(null, ''),
+    location: Joi.string().optional().allow(null, ''),
+    gender: Joi.string().valid('male', 'female', 'other').optional().allow(null),
+    dob: Joi.date().optional().max('now').allow(null).messages({
+      'date.max': 'Date of birth cannot be in the future'
+    }),
+    heightCm: Joi.number().min(50).max(300).optional().allow(null).messages({
+      'number.min': 'Height must be at least 50 cm',
+      'number.max': 'Height must be at most 300 cm'
+    }),
+    weightKg: Joi.number().min(20).max(500).optional().allow(null).messages({
+      'number.min': 'Weight must be at least 20 kg',
+      'number.max': 'Weight must be at most 500 kg'
     })
   })
   try {
