@@ -13,6 +13,9 @@ Router.post('/logout', authController.logout)
 
 Router.post('/refresh-token', authController.refreshToken)
 
+Router.put('/change-password', authHandlingMiddleware.isAuthorized, authValidation.changePassword, authController.changePassword)
+
+
 // Example of a protected route
 Router.get('/profile', authHandlingMiddleware.isAuthorized, (req, res) => {
   // Access user info from req.jwtDecoded
@@ -36,5 +39,7 @@ Router.get('/debug', (req, res) => {
     }
   }
 })
+
+
 
 export const authRoutes: express.Router = Router

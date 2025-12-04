@@ -25,6 +25,13 @@ const ADMIN_COLLECTION_SCHEMA = Joi.object<IAdmin>({
     .message(PASSWORD_RULE_MESSAGE)
     .required(),
   displayName: Joi.string().min(2).max(100).required(),
+  phoneNumber: Joi.string().allow(null).optional(),
+  bio: Joi.string().allow(null).optional(),
+  location: Joi.string().allow(null).optional(),
+  dob: Joi.date().allow(null).optional(),
+  gender: Joi.string().allow(null).optional(),
+  heightCm: Joi.number().allow(null).optional(),
+  weightKg: Joi.number().allow(null).optional(),
   role: Joi.string()
     .default(USER_ROLES.ADMIN)
     .valid(...Object.values(USER_ROLES)),
@@ -35,7 +42,7 @@ const ADMIN_COLLECTION_SCHEMA = Joi.object<IAdmin>({
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
   updatedAt: Joi.date().timestamp('javascript').default(null)
 })
-const INVALID_UPDATE_FIELDS = ['_id', 'email', 'password', 'role', 'createdAt']
+const INVALID_UPDATE_FIELDS = ['_id', 'email', 'role', 'createdAt']
 
 const createNew = async (adminData: Partial<IAdmin>): Promise<any> => {
   try {

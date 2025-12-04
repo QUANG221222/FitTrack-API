@@ -7,7 +7,7 @@ import {
   LoginRequest,
   LoginResponse,
   VerifyEmailRequest,
-  VerifyEmailResponse
+  VerifyEmailResponse,
 } from '~/types/auth.type'
 import { authService } from '~/services/auth.service'
 import { cookieOptions } from '~/configs/cookieOption'
@@ -89,9 +89,26 @@ const logout = async (_req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const changePassword = async (
+  req: Request<{}, {}, any, {}>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await authService.changePassword(req)
+    res.status(StatusCodes.OK).json({
+      message: 'Password changed successfully',
+      data: result
+    })
+  } catch (error: any) {
+    next(error)
+  }
+} 
+
 export const authController = {
   refreshToken,
   logout,
   login,
-  verifyEmail
+  verifyEmail,
+  changePassword
 }
