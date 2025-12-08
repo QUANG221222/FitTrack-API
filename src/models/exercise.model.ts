@@ -194,6 +194,28 @@ const countExercises = async (): Promise<number> => {
   }
 }
 
+const countExercisesByType = async (): Promise<any[]> => {
+  try {
+    const pipeline = [
+      {
+        $group: {
+          _id: '$type',
+          total: { $sum: 1 }
+        }
+      }
+    ]
+
+    const result = await GET_DB().collection(COLLECTION_NAME).aggregate(pipeline).toArray()
+
+    return result.map(item => ({
+      name: item._id,
+      value: item.total
+    }))
+  } catch (error: any) {
+    throw new Error(error)
+  }
+}
+
 export const exerciseModel = {
   createNew,
   findOneByName,
@@ -201,5 +223,6 @@ export const exerciseModel = {
   findAll,
   update,
   deleteOne,
-  countExercises
+  countExercises,
+  countExercisesByType
 }

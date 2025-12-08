@@ -123,6 +123,34 @@ const countUsers = async (): Promise<number> => {
   }
 }
 
+const countUsersByMonth = async (): Promise<any[]> => {
+  try {
+    const pipeline = [
+      {
+      $group: {
+        _id: {
+          month: { $dateToString: {
+            format: '%m',
+            date: { $toDate: '$createdAt' }
+            }  
+          }
+        },
+        total: { $sum: 1 }
+      }
+      }
+    ]
+
+    const result = await GET_DB().collection(COLLECTION_NAME).aggregate(pipeline).sort({ '_id.month': 1 }).toArray()
+
+    return result.map(item => ({
+      month: item._id.month,
+      users: item.total
+    }))
+  } catch (error: any) {
+    throw new Error(error)
+  }
+}
+
 export const userModel = {
   findOneByEmail,
   createNew,
@@ -130,5 +158,6 @@ export const userModel = {
   deleteUser,
   update,
   findAllUsers,
-  countUsers
+  countUsers,
+  countUsersByMonth
 }
