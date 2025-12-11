@@ -34,6 +34,22 @@ const getTotalUsers = async (
   }
 }
 
+const getTotalUsersByMonth = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const totalByMonth = await dashboardService.getTotalUsersByMonth()
+    res.status(StatusCodes.OK).json({
+      message: 'Total users by month fetched successfully',
+      totalByMonth: totalByMonth
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 const getTotalMuscleGroups = async (
   _req: Request,
   res: Response,
@@ -66,9 +82,27 @@ const getTotalWorkoutPlans = async (
   }
 }
 
+const countExercisesByType = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const total = await dashboardService.getTotalExercisesByType()
+    res.status(StatusCodes.OK).json({
+      message: 'Exercise counts by type fetched successfully',
+      total: total
+    })
+  } catch (error: any) {
+    next(error)
+  }
+}
+
 export const dashboardController = {
   getTotalExercises,
   getTotalUsers,
   getTotalMuscleGroups,
-  getTotalWorkoutPlans
+  getTotalWorkoutPlans,
+  getTotalUsersByMonth,
+  countExercisesByType
 }

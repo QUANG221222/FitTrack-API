@@ -18,12 +18,22 @@ Router.get(
   dashboardController.getTotalUsers
 )
 
+Router.get('/total-users-by-month', authHandlingMiddleware.isAuthorized, authHandlingMiddleware.isAdmin, dashboardController.getTotalUsersByMonth)
+
+Router.get(
+  '/total-exercises-by-type',
+  authHandlingMiddleware.isAuthorized,
+  authHandlingMiddleware.isAdmin,
+  dashboardController.countExercisesByType
+)
+
 Router.get(
   '/total-muscle-groups',
   authHandlingMiddleware.isAuthorized,
   authHandlingMiddleware.isAdmin,
   dashboardController.getTotalMuscleGroups
 )
+
 Router.get(
   '/total-workout-plans',
   authHandlingMiddleware.isAuthorized,
