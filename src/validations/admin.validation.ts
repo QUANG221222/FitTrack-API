@@ -46,7 +46,10 @@ const update = async (req: Request, _res: Response, next: NextFunction) => {
     phoneNumber: Joi.string().optional().allow(null, ''),
     bio: Joi.string().optional().allow(null, ''),
     location: Joi.string().optional().allow(null, ''),
-    gender: Joi.string().valid('male', 'female', 'other').optional().allow(null),
+    gender: Joi.string()
+      .valid('male', 'female', 'other')
+      .optional()
+      .allow(null),
     dob: Joi.date().optional().max('now').allow(null).messages({
       'date.max': 'Date of birth cannot be in the future'
     }),
@@ -54,9 +57,9 @@ const update = async (req: Request, _res: Response, next: NextFunction) => {
       'number.min': 'Height must be at least 50 cm',
       'number.max': 'Height must be at most 300 cm'
     }),
-    weightKg: Joi.number().min(20).max(500).optional().allow(null).messages({
+    weightKg: Joi.number().min(20).max(200).optional().allow(null).messages({
       'number.min': 'Weight must be at least 20 kg',
-      'number.max': 'Weight must be at most 500 kg'
+      'number.max': 'Weight must be at most 200 kg'
     })
   })
   try {
@@ -97,9 +100,9 @@ const updateUser = async (req: Request, _res: Response, next: NextFunction) => {
       'number.min': 'Height must be at least 50 cm',
       'number.max': 'Height must be at most 300 cm'
     }),
-    weightKg: Joi.number().min(20).max(500).optional().messages({
+    weightKg: Joi.number().min(20).max(200).optional().messages({
       'number.min': 'Weight must be at least 20 kg',
-      'number.max': 'Weight must be at most 500 kg'
+      'number.max': 'Weight must be at most 200 kg'
     }),
     isActive: Joi.boolean().optional()
   })

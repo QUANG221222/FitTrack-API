@@ -44,9 +44,9 @@ const update = async (req: Request, _res: Response, next: NextFunction) => {
       'number.min': 'Height must be at least 50 cm',
       'number.max': 'Height must be at most 300 cm'
     }),
-    weightKg: Joi.number().min(20).max(500).optional().messages({
+    weightKg: Joi.number().min(20).max(200).optional().messages({
       'number.min': 'Weight must be at least 20 kg',
-      'number.max': 'Weight must be at most 500 kg'
+      'number.max': 'Weight must be at most 200 kg'
     })
   })
   try {

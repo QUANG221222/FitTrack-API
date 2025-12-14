@@ -11,6 +11,7 @@ import { goalRoutes } from './goal.routes'
 import { progressPhotoRoutes } from './progressPhoto.routes'
 import { blogRoutes } from './blog.routes'
 import { dashboardRouter } from './dashboard.routes'
+import { threadRoutes } from './thread.routes'
 
 const Router = express.Router()
 
@@ -37,5 +38,7 @@ Router.use('/progress-photos', progressPhotoRoutes)
 Router.use('/blogs', blogRoutes)
 
 Router.use('/dashboard', dashboardRouter)
+
+Router.use('/threads', threadRoutes)
 
 export const APIs_V1: express.Router = Router
